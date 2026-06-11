@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HABaware — Clear Lake Pilot</title>
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0f1117;
+    --surface:   #1a1d27;
+    --surface2:  #22263a;
+    --border:    #2e3350;
+    --text:      #e8eaf0;
+    --muted:     #7b82a0;
+    --accent:    #4f8ef7;
+
+    --low:       #2e7d32;
+    --moderate:  #558b2f;
+    --high:      #f57f17;
+    --veryhigh:  #e64a19;
+    --danger:    #b71c1c;
+
+    --q-good:    #27ae60;
+    --q-fair:    #f39c12;
+    --q-poor:    #e74c3c;
+  }
+
+  html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+
+  /* ── Layout ─────────────────────────────────────────────── */
+  #app { display: flex; height: 100vh; overflow: hidden; }
+
+  #map-col  { flex: 1 1 60%; min-width: 0; position: relative; }
+  #info-col { flex: 0 0 400px; width: 400px; overflow-y: auto; background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+
+  @media (max-width: 860px) {
+    #app { flex-direction: column; }
+    #map-col  { flex: 0 0 55vh; }
+    #info-col { flex: 1; width: 100%; border-left: none; border-top: 1px solid var(--border); }
+  }
+
+  /* ── Map ────────────────────────────────────────────────── */
+  #map { width: 100%; height: 100%; }
+
+  #map-header {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+    z-index: 1000;
+    background: rgba(15,17,23,0.88); backdrop-filter: blur(6px);
+    border: 1px solid var(--border); border-radius: 24px;
+    padding: 6px 16px 6px 12px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--muted); white-space: nowrap;
+    pointer-events: none;
+  }
+  #map-header svg { flex-shrink: 0; }
+
+  #arm-badge {
+    position: absolute; bottom: 20px; left: 12px; z-index: 1000;
+    background: rgba(15,17,23,0.88); backdrop-filter: blur(6px);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 12px; font-size: 12px; color: var(--muted);
+  }
+  #arm-badge strong { color: var(--text); }
+
+  /* ── Info panel ─────────────────────────────────────────── */
+  #info-col header {
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .app-name { font-size: 16px; font-weight: 700; letter-spacing: -.3px; }
+  .app-name span { color: var(--accent); }
+  .subtitle { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  /* ── Risk banner ────────────────────────────────────────── */
+  #risk-banner {
+    margin: 12px 12px 0;
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 6px;
+    flex-shrink: 0;
+  }
+  #risk-row { display: flex; align-items: center; justify-content: space-between; }
+  #risk-label { font-size: 22px; font-weight: 800; letter-spacing: -.5px; }
+  #ci-value { font-size: 12px; opacity: .8; }
+  .risk-msg { font-size: 12px; opacity: .85; line-height: 1.4; }
+
+  /* CI range bar */
+  .ci-bar-wrap { margin-top: 6px; }
+  .ci-scale { position: relative; height: 6px; border-radius: 3px;
+    background: linear-gradient(to right, var(--low), var(--moderate), var(--high), var(--veryhigh), var(--danger));
+  }
+  .ci-needle { position: absolute; top: -3px; width: 2px; height: 12px; background: white; border-radius: 1px; transform: translateX(-50%); transition: left .4s; }
+  .ci-band { position: absolute; top: 0; height: 6px; background: rgba(255,255,255,0.25); border-radius: 3px; transition: left .4s, width .4s; }
+  .ci-bar-labels { display: flex; justify-content: space-between; font-size: 10px; opacity: .6; margin-top: 3px; }
+
+  /* ── Confidence ─────────────────────────────────────────── */
+  #confidence-section { padding: 12px 12px 0; flex-shrink: 0; }
+  .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 8px; }
+  #overall-conf { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .conf-bar-bg { flex: 1; height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .conf-bar-fill { height: 100%; border-radius: 4px; background: var(--accent); transition: width .5s; }
+  .conf-pct { font-size: 16px; font-weight: 700; min-width: 42px; text-align: right; color: var(--accent); }
+  .conf-note { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+
+  /* ── Data quality cards ──────────────────────────────────── */
+  #dq-section { padding: 12px; flex-shrink: 0; }
+  .dq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .dq-card {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; position: relative; overflow: hidden;
+  }
+  .dq-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    border-radius: 3px 0 0 3px;
+  }
+  .dq-card.good::before  { background: var(--q-good); }
+  .dq-card.fair::before  { background: var(--q-fair); }
+  .dq-card.poor::before  { background: var(--q-poor); }
+  .dq-source { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 4px; }
+  .dq-score-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .dq-score-pct { font-size: 18px; font-weight: 700; }
+  .dq-mini-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .dq-mini-fill { height: 100%; border-radius: 2px; transition: width .5s; }
+  .dq-detail { font-size: 10px; color: var(--muted); line-height: 1.4; }
+  .dq-weight { font-size: 10px; color: var(--muted); margin-top: 3px; }
+  .dq-weight span { background: var(--border); border-radius: 3px; padding: 1px 4px; }
+
+  /* ── Sparkline ───────────────────────────────────────────── */
+  #trend-section { padding: 0 12px 12px; flex-shrink: 0; }
+  #trend-canvas-wrap { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+  #trendChart { max-height: 80px; }
+
+  /* ── Nearest sites ───────────────────────────────────────── */
+  #sites-section { padding: 0 12px 12px; flex-shrink: 0; }
+  .site-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .site-row:last-child { border-bottom: none; }
+  .site-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .site-name { font-size: 12px; flex: 1; }
+  .site-dist { font-size: 11px; color: var(--muted); }
+  .site-adv { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 3px; }
+
+  /* ── Advisory button + output ───────────────────────────── */
+  #advisory-section { padding: 0 12px 16px; }
+  #activity-row { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+  .act-btn { flex: 1; min-width: 80px; padding: 7px 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-size: 11px; cursor: pointer; text-align: center; transition: all .2s; }
+  .act-btn:hover, .act-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+  #gen-advisory-btn {
+    width: 100%; padding: 10px; background: var(--accent); border: none; border-radius: 8px;
+    color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .2s;
+  }
+  #gen-advisory-btn:hover { opacity: .85; }
+  #gen-advisory-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  #advisory-output {
+    margin-top: 10px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; font-size: 12px; line-height: 1.6;
+    color: var(--text); display: none; white-space: pre-wrap;
+  }
+
+  /* ── Skeleton loader ────────────────────────────────────── */
+  .skeleton { background: var(--surface2); border-radius: 4px; animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+
+  /* ── Leaflet overrides ──────────────────────────────────── */
+  .leaflet-container { background: #1a1d27; }
+  .leaflet-tile { filter: brightness(.7) saturate(.6) hue-rotate(180deg); }
+
+  /* Advisory level dots on map */
+  .site-marker { border-radius: 50%; border: 2px solid rgba(255,255,255,.6); }
+
+  /* ── Scrollbar ───────────────────────────────────────────── */
+  #info-col::-webkit-scrollbar { width: 4px; }
+  #info-col::-webkit-scrollbar-track { background: transparent; }
+  #info-col::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ── Map column ────────────────────────────────────── -->
+  <div id="map-col">
+    <div id="map"></div>
+    <div id="map-header">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f8ef7" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+      </svg>
+      Click or drag pin to select a location on the lake
+    </div>
+    <div id="arm-badge">Arm: <strong id="arm-label">—</strong> &nbsp;·&nbsp; <span id="coord-label">—</span></div>
+  </div>
+
+  <!-- ── Info column ───────────────────────────────────── -->
+  <div id="info-col">
+    <header>
+      <div>
+        <div class="app-name">HAB<span>aware</span></div>
+        <div class="subtitle">Clear Lake, CA · Pilot</div>
+      </div>
+      <div id="header-badge" style="font-size:11px; color:var(--muted);">Loading…</div>
+    </header>
+
+    <!-- Risk banner -->
+    <div id="risk-banner" style="background: var(--surface2);">
+      <div id="risk-row">
+        <div id="risk-label" class="skeleton" style="width:130px;height:28px;">&nbsp;</div>
+        <div id="ci-value" style="color:var(--muted);">—</div>
+      </div>
+      <div class="risk-msg" id="risk-msg">—</div>
+      <div class="ci-bar-wrap">
+        <div class="ci-scale">
+          <div class="ci-band" id="ci-band" style="left:0%;width:0%"></div>
+          <div class="ci-needle" id="ci-needle" style="left:0%"></div>
+        </div>
+        <div class="ci-bar-labels"><span>Low</span><span>Mod</span><span>High</span><span>V.High</span><span>Danger</span></div>
+      </div>
+    </div>
+
+    <!-- Overall confidence -->
+    <div id="confidence-section">
+      <div class="section-title">Forecast Confidence</div>
+      <div id="overall-conf">
+        <div class="conf-bar-bg"><div class="conf-bar-fill" id="conf-fill" style="width:0%"></div></div>
+        <div class="conf-pct" id="conf-pct">—</div>
+      </div>
+      <div class="conf-note" id="conf-note">Loading data quality indicators…</div>
+    </div>
+
+    <!-- Data quality cards -->
+    <div id="dq-section">
+      <div class="section-title">Input Data Quality</div>
+      <div class="dq-grid" id="dq-grid">
+        <div class="dq-card skeleton" style="height:80px;"></div>
+        <div class="dq-card skeleton" style="height:80px;"></div>
+        <div class="dq-card skeleton" style="height:80px;"></div>
+        <div class="dq-card skeleton" style="height:80px;"></div>
+      </div>
+    </div>
+
+    <!-- CI Trend sparkline -->
+    <div id="trend-section">
+      <div class="section-title">30-Day Satellite Trend</div>
+      <div id="trend-canvas-wrap">
+        <canvas id="trendChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Nearest monitoring sites -->
+    <div id="sites-section">
+      <div class="section-title">Nearby BV Pomo Monitoring Sites</div>
+      <div id="sites-list"></div>
+    </div>
+
+    <!-- Advisory -->
+    <div id="advisory-section">
+      <div class="section-title" style="margin-bottom:8px;">Generate Advisory</div>
+      <div id="activity-row">
+        <div class="act-btn active" data-act="swimming">Swimming</div>
+        <div class="act-btn" data-act="kayaking">Kayaking</div>
+        <div class="act-btn" data-act="fishing">Fishing</div>
+        <div class="act-btn" data-act="dog_walking">Dog Walk</div>
+        <div class="act-btn" data-act="birdwatching">Birding</div>
+      </div>
+      <button id="gen-advisory-btn">Generate AI Advisory</button>
+      <div id="advisory-output"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+const state = {
+  lat: 39.0300,
+  lon: -122.780,
+  activity: "swimming",
+  status: null,
+};
+
+// ── Map setup ─────────────────────────────────────────────────────────────────
+const map = L.map("map", {
+  center: [39.00, -122.78],
+  zoom: 11,
+  zoomControl: true,
+});
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "© OpenStreetMap contributors",
+  maxZoom: 18,
+}).addTo(map);
+
+// Custom pin icon
+const pinIcon = L.divIcon({
+  className: "",
+  html: `<svg width="32" height="44" viewBox="0 0 32 44" xmlns="http://www.w3.org/2000/svg">
+    <filter id="s"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity=".4"/></filter>
+    <path d="M16 0C9 0 3 6 3 13c0 9 13 31 13 31S29 22 29 13C29 6 23 0 16 0z" fill="#4f8ef7" filter="url(#s)"/>
+    <circle cx="16" cy="13" r="5" fill="white"/>
+  </svg>`,
+  iconAnchor: [16, 44],
+  popupAnchor: [0, -44],
+});
+
+const userMarker = L.marker([state.lat, state.lon], { icon: pinIcon, draggable: true }).addTo(map);
+
+userMarker.on("dragend", e => {
+  const ll = e.target.getLatLng();
+  updateLocation(ll.lat, ll.lng);
+});
+
+map.on("click", e => {
+  userMarker.setLatLng(e.latlng);
+  updateLocation(e.latlng.lat, e.latlng.lng);
+});
+
+// ── BV Pomo site markers ───────────────────────────────────────────────────────
+const advColors = {
+  DANGER:  "#b71c1c",
+  WARNING: "#e64a19",
+  CAUTION: "#f57f17",
+  NONE:    "#546e7a",
+};
+
+let siteMarkers = [];
+
+fetch("/api/sites").then(r => r.json()).then(geo => {
+  geo.features.forEach(f => {
+    const [lon, lat] = f.geometry.coordinates;
+    const p = f.properties;
+    const color = advColors[p.advisory] || advColors.NONE;
+    const circle = L.circleMarker([lat, lon], {
+      radius: 6,
+      fillColor: color,
+      fillOpacity: 0.85,
+      color: "rgba(255,255,255,0.5)",
+      weight: 1.5,
+    }).addTo(map);
+    circle.bindTooltip(`<b>${p.name}</b><br>${p.arm_name}<br>Last: ${p.advisory}`, {
+      direction: "top", className: "leaflet-dark-tooltip"
+    });
+    siteMarkers.push({ marker: circle, id: p.site_id, color });
+  });
+});
+
+// ── Update location ───────────────────────────────────────────────────────────
+function updateLocation(lat, lon) {
+  state.lat = lat;
+  state.lon = lon;
+  document.getElementById("coord-label").textContent =
+    `${lat.toFixed(4)}°N, ${Math.abs(lon).toFixed(4)}°W`;
+  loadStatus();
+}
+
+// ── Load status from API ───────────────────────────────────────────────────────
+function loadStatus() {
+  document.getElementById("header-badge").textContent = "Updating…";
+  fetch(`/api/status?lat=${state.lat}&lon=${state.lon}`)
+    .then(r => r.json())
+    .then(data => {
+      state.status = data;
+      renderAll(data);
+    })
+    .catch(err => {
+      document.getElementById("header-badge").textContent = "Error";
+      console.error(err);
+    });
+}
+
+// ── Render everything ─────────────────────────────────────────────────────────
+function renderAll(d) {
+  renderRiskBanner(d);
+  renderConfidence(d);
+  renderDQCards(d.data_quality);
+  renderTrend(d.ci_trend);
+  renderNearestSites(d.location.nearest_sites, d.data_quality.tribal);
+  document.getElementById("arm-label").textContent = d.location.arm_name;
+  document.getElementById("header-badge").textContent =
+    `Updated ${new Date().toLocaleTimeString()}`;
+}
+
+function renderRiskBanner(d) {
+  const fc = d.forecast;
+  const banner = document.getElementById("risk-banner");
+  banner.style.background = fc.tier_color + "22";
+  banner.style.borderLeft = `4px solid ${fc.tier_color}`;
+
+  document.getElementById("risk-label").textContent = fc.tier.toUpperCase();
+  document.getElementById("risk-label").style.color = fc.tier_color;
+  document.getElementById("risk-label").classList.remove("skeleton");
+
+  const curr = fc.ci_max_current;
+  const fc7  = fc.ci_max_7d;
+  document.getElementById("ci-value").innerHTML =
+    `Current: <b>${curr}</b> &nbsp;→&nbsp; 7-day forecast: <b>${fc7}</b>`;
+
+  const MESSAGES = {
+    "Low":       "No bloom signal detected. Standard precautions apply.",
+    "Moderate":  "Low-level bloom signal. Sensitive individuals should exercise caution.",
+    "High":      "Active bloom signal. Avoid water contact. Keep pets away.",
+    "Very High": "Dense bloom present. Do not enter the water.",
+    "Danger":    "Severe bloom. Shoreline contact may be harmful. Follow posted advisories.",
+  };
+  document.getElementById("risk-msg").textContent = MESSAGES[fc.tier] || "";
+
+  // CI scale bar — log scale: max domain = 999
+  const maxDomain = 999;
+  const needlePct = Math.min(100, (Math.log1p(fc7) / Math.log1p(maxDomain)) * 100);
+  const bandLow   = Math.min(100, (Math.log1p(fc.confidence_band.ci_68_low)  / Math.log1p(maxDomain)) * 100);
+  const bandHigh  = Math.min(100, (Math.log1p(fc.confidence_band.ci_68_high) / Math.log1p(maxDomain)) * 100);
+
+  document.getElementById("ci-needle").style.left = needlePct + "%";
+  document.getElementById("ci-band").style.left  = bandLow + "%";
+  document.getElementById("ci-band").style.width = (bandHigh - bandLow) + "%";
+}
+
+function renderConfidence(d) {
+  const pct = d.overall_confidence;
+  document.getElementById("conf-fill").style.width = pct + "%";
+  document.getElementById("conf-pct").textContent  = pct + "%";
+
+  const dq = d.data_quality;
+  const tiers = d.forecast.tiers_68pct_band || [];
+  let note = "";
+  if (tiers.length === 1) {
+    note = `68% confidence interval stays within ${tiers[0]} tier.`;
+  } else if (tiers.length > 1) {
+    note = `68% CI spans ${tiers.join(" → ")} tiers — risk level uncertain.`;
+  }
+  // Flag stale data
+  const staleWarnings = [];
+  if (dq.field_obs.score < 0.5) staleWarnings.push("SWAMP field obs stale");
+  if (dq.tribal.score < 0.5) staleWarnings.push("tribal monitoring seasonal");
+  if (staleWarnings.length) note += " (" + staleWarnings.join("; ") + ")";
+  document.getElementById("conf-note").textContent = note;
+}
+
+function qualityClass(score) {
+  if (score >= 0.70) return "good";
+  if (score >= 0.40) return "fair";
+  return "poor";
+}
+function qualityColor(score) {
+  if (score >= 0.70) return "var(--q-good)";
+  if (score >= 0.40) return "var(--q-fair)";
+  return "var(--q-poor)";
+}
+
+const DQ_ICONS = {
+  satellite: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>`,
+  field_obs: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20H3v-3a4 4 0 0 1 4-4h6m4 7v-3m0 0a4 4 0 0 0-4-4H9"/><circle cx="9" cy="7" r="4"/></svg>`,
+  tribal:    `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  weather:   `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>`,
+};
+
+const DQ_LABELS = {
+  satellite: "Satellite",
+  field_obs: "Field Obs",
+  tribal:    "Tribal",
+  weather:   "Weather",
+};
+
+function renderDQCards(dq) {
+  const grid = document.getElementById("dq-grid");
+  grid.innerHTML = "";
+  const keys = ["satellite", "field_obs", "tribal", "weather"];
+  keys.forEach(key => {
+    const src = dq[key];
+    const qClass = qualityClass(src.score);
+    const qColor = qualityColor(src.score);
+    const card = document.createElement("div");
+    card.className = `dq-card ${qClass}`;
+    card.innerHTML = `
+      <div class="dq-source" style="display:flex;align-items:center;gap:5px;color:${qColor}">
+        ${DQ_ICONS[key]} ${DQ_LABELS[key]}
+      </div>
+      <div class="dq-score-row">
+        <div class="dq-score-pct" style="color:${qColor}">${src.pct}%</div>
+        <div class="dq-mini-bar">
+          <div class="dq-mini-fill" style="width:${src.pct}%;background:${qColor}"></div>
+        </div>
+      </div>
+      <div class="dq-detail">${src.detail}</div>
+      <div class="dq-weight">Weight: <span>${src.weight_pct}%</span></div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+let trendChart = null;
+function renderTrend(trend) {
+  if (!trend || !trend.length) return;
+  const labels = trend.map(t => t.date.slice(5)); // MM-DD
+  const values = trend.map(t => t.ci_max);
+
+  // Color each bar by tier
+  const bgColors = values.map(v => {
+    if (v >= 200) return "#b71c1c88";
+    if (v >= 80)  return "#e64a1988";
+    if (v >= 30)  return "#f57f1788";
+    if (v >= 5)   return "#558b2f88";
+    return "#2e7d3288";
+  });
+  const borderColors = bgColors.map(c => c.slice(0, 7));
+
+  const ctx = document.getElementById("trendChart").getContext("2d");
+  if (trendChart) trendChart.destroy();
+  trendChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: bgColors,
+        borderColor: borderColors,
+        borderWidth: 1,
+        borderRadius: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: {
+          label: ctx => ` ci_max: ${ctx.parsed.y.toFixed(0)}`,
+          title: items => items[0].label,
+        }
+      }},
+      scales: {
+        x: { ticks: { color: "#7b82a0", font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 },
+             grid: { color: "#2e3350" }},
+        y: { ticks: { color: "#7b82a0", font: { size: 9 } }, grid: { color: "#2e3350" }, min: 0 },
+      }
+    }
+  });
+}
+
+const ADV_COLORS = { DANGER: "#b71c1c", WARNING: "#e64a19", CAUTION: "#f57f17", NONE: "#546e7a" };
+function renderNearestSites(sites, tribalDQ) {
+  const list = document.getElementById("sites-list");
+  if (!sites || !sites.length) { list.innerHTML = '<div style="color:var(--muted);font-size:12px;">No sites available</div>'; return; }
+
+  // Get site advisory status from site markers
+  const siteAdv = {};
+  siteMarkers.forEach(s => siteAdv[s.id] = s.color);
+
+  list.innerHTML = "";
+  sites.slice(0, 5).forEach(s => {
+    const color = siteAdv[s.site_id] || ADV_COLORS.NONE;
+    const distStr = s.dist_m < 1000 ? `${s.dist_m}m` : `${(s.dist_m/1000).toFixed(1)}km`;
+    const row = document.createElement("div");
+    row.className = "site-row";
+
+    // Advisory label from known caution/danger/warning lists
+    let advLabel = "—";
+    if (state.status?.data_quality?.tribal?.score != null) {
+      // Try to get from the bvpomo status we already have
+      advLabel = "Oct 2024";
+    }
+
+    row.innerHTML = `
+      <div class="site-dot" style="background:${color}"></div>
+      <div class="site-name">${s.name}<br><span style="color:var(--muted);font-size:10px;">${({'U':'Upper Arm','L':'Lower Arm','O':'Oaks Arm'})[s.arm] || s.arm}</span></div>
+      <div class="site-dist">${distStr}</div>
+    `;
+    list.appendChild(row);
+  });
+  // Add note if tribal data is seasonal
+  if (tribalDQ && tribalDQ.score < 0.6) {
+    const note = document.createElement("div");
+    note.style.cssText = "font-size:10px;color:var(--muted);margin-top:6px;";
+    note.textContent = `Site advisories from ${tribalDQ.latest_date || "Oct 2024"} (end of monitoring season).`;
+    list.appendChild(note);
+  }
+}
+
+// ── Activity selector ─────────────────────────────────────────────────────────
+document.querySelectorAll(".act-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".act-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.activity = btn.dataset.act;
+  });
+});
+
+// ── Advisory button ───────────────────────────────────────────────────────────
+document.getElementById("gen-advisory-btn").addEventListener("click", () => {
+  const btn = document.getElementById("gen-advisory-btn");
+  const out = document.getElementById("advisory-output");
+  btn.disabled = true;
+  btn.textContent = "Generating advisory…";
+  out.style.display = "none";
+
+  fetch("/api/advisory", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      lat: state.lat, lon: state.lon,
+      date: new Date().toISOString().slice(0, 10),
+      activity: state.activity,
+    }),
+  })
+    .then(r => r.json())
+    .then(data => {
+      out.style.display = "block";
+      if (data.error) {
+        out.textContent = "Error: " + data.error;
+      } else {
+        out.textContent = data.advisory || JSON.stringify(data, null, 2);
+      }
+    })
+    .catch(err => {
+      out.style.display = "block";
+      out.textContent = "Request failed: " + err.message;
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = "Generate AI Advisory";
+    });
+});
+
+// ── Highlight nearest site on map when location changes ───────────────────────
+function highlightNearestSite(sites) {
+  if (!sites || !sites.length) return;
+  siteMarkers.forEach(s => s.marker.setRadius(6));
+  const nearest = sites[0];
+  const found = siteMarkers.find(s => s.id === nearest.site_id);
+  if (found) found.marker.setRadius(10);
+}
+
+const origRenderAll = renderAll;
+window.renderAll = d => {
+  origRenderAll(d);
+  highlightNearestSite(d.location.nearest_sites);
+};
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+document.getElementById("coord-label").textContent =
+  `${state.lat.toFixed(4)}°N, ${Math.abs(state.lon).toFixed(4)}°W`;
+loadStatus();
+
+// Auto-refresh every 5 minutes so a stale tab recovers and picks up new satellite data
+setInterval(() => loadStatus(), 5 * 60 * 1000);
+</script>
+</body>
+</html>

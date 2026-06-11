@@ -29,7 +29,11 @@ BASE_FEATURE_COLS = [
     "peak_7d", "peak_14d", "peak_30d",
 ]
 
-# CIMIS weather features (included when cimis_data.py has been run)
+# Weather features column list — defined for advisory.py compatibility but
+# NOT used in model training. The satellite CI signal already integrates
+# temperature and stratification effects; adding weather features empirically
+# degrades forecast accuracy (RMSE 67 → 76) by introducing redundant noise.
+# Weather data is passed to Claude in the advisory prompt instead.
 WEATHER_FEATURE_COLS = [
     "tmp_avg_c",       "tmp_max_c",       "tmp_min_c",
     "tmp_avg_7d",      "tmp_avg_14d",     "tmp_max_7d",
@@ -59,16 +63,16 @@ def risk_tier(ci_value):
     return "Danger", RISK_TIERS[-1][3]
 
 def detect_feature_cols(sample_row):
-    """Return the feature column list, adding weather cols if they exist in the CSV."""
+    """Return satellite-only feature columns. Weather data is present in the CSV but
+    empirically hurts forecast accuracy (RMSE 67→76) because the CI signal already
+    integrates heat/stratification effects. Weather context goes to Claude instead."""
     available = set(sample_row.keys())
-    weather_present = [c for c in WEATHER_FEATURE_COLS if c in available and sample_row.get(c) not in (None, "", "None")]
+    weather_present = any(c in available and sample_row.get(c) not in (None, "", "None")
+                          for c in WEATHER_FEATURE_COLS)
     if weather_present:
-        print(f"  CIMIS weather features detected: {len(weather_present)} columns will be included")
-        return BASE_FEATURE_COLS + WEATHER_FEATURE_COLS
-    else:
-        print("  No CIMIS weather features found — using satellite + seasonal features only")
-        print("  (Run ml/cimis_data.py with CIMIS_APP_KEY to add weather features)")
-        return BASE_FEATURE_COLS
+        print("  Weather data present in CSV (used in advisory prompt, not in ML model)")
+    print(f"  Using satellite + seasonal features: {len(BASE_FEATURE_COLS)} columns")
+    return BASE_FEATURE_COLS
 
 
 def load_data():

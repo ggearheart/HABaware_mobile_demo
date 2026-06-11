@@ -24,9 +24,15 @@ BVPOMO_STATUS_PATH = Path(__file__).parent.parent / "data/processed/bvpomo_curre
 BVPOMO_PEAKS_PATH  = Path(__file__).parent.parent / "data/processed/bvpomo_annual_peaks.csv"
 CIMIS_WEATHER_CSV  = Path(__file__).parent.parent / "data/processed/cimis_clear_lake_weather.csv"
 
-CIMIS_STATION_ID   = 106
-CIMIS_BASE         = "https://et.water.ca.gov/api/data"
-CIMIS_DATA_ITEMS   = "day-air-tmp-avg,day-air-tmp-max,day-air-tmp-min,day-rel-hum-avg,day-sol-rad-avg,day-wind-spd-avg,day-wind-run,day-precip,day-eto"
+CIMIS_STATION_ID   = 106   # kept for legacy reference; live data now comes from Open-Meteo
+
+# Open-Meteo forecast API — no key required, queried at Clear Lake coordinates
+OM_FORECAST_BASE = "https://api.open-meteo.com/v1/forecast"
+OM_VARIABLES     = ("temperature_2m_mean,temperature_2m_max,temperature_2m_min,"
+                    "relative_humidity_2m_mean,shortwave_radiation_sum,"
+                    "wind_speed_10m_mean,wind_speed_10m_max,"
+                    "precipitation_sum,et0_fao_evapotranspiration")
+CL_LAT, CL_LON   = 39.0300, -122.780
 
 FHAB_BASE   = "https://fhab-api.sfei.org"
 CLEAR_LAKE_WID = 33
@@ -140,56 +146,48 @@ def load_recent_swamp_obs(n=10):
         rows = list(csv.DictReader(f))
     return rows[-n:] if len(rows) >= n else rows
 
-def fetch_recent_cimis(days=14):
-    """Fetch the last `days` of CIMIS weather from Station 106. Returns list of day dicts."""
-    app_key = os.environ.get("CIMIS_APP_KEY", "").strip()
-    if not app_key:
-        return []
-    end   = date.today()
-    start = end - timedelta(days=days)
+def fetch_recent_weather(past_days=14):
+    """Fetch recent + short-range forecast weather via Open-Meteo at Clear Lake coordinates."""
     params = urllib.parse.urlencode({
-        "appKey":        app_key,
-        "targets":       str(CIMIS_STATION_ID),
-        "startDate":     start.isoformat(),
-        "endDate":       end.isoformat(),
-        "dataItems":     CIMIS_DATA_ITEMS,
-        "unitOfMeasure": "M",
+        "latitude":       CL_LAT,
+        "longitude":      CL_LON,
+        "past_days":      past_days,
+        "forecast_days":  3,
+        "daily":          OM_VARIABLES,
+        "timezone":       "America/Los_Angeles",
     })
     try:
         req = urllib.request.Request(
-            f"{CIMIS_BASE}?{params}",
-            headers={"Accept": "application/json", "User-Agent": "HABaware/1.0"},
+            f"{OM_FORECAST_BASE}?{params}",
+            headers={"User-Agent": "HABaware/1.0"},
         )
         with urllib.request.urlopen(req, timeout=15) as r:
             raw = json.loads(r.read())
     except Exception as e:
-        print(f"  CIMIS API fetch failed: {e}")
+        print(f"  Open-Meteo fetch failed: {e}")
         return []
 
-    item_map = {
-        "day-air-tmp-avg":  "tmp_avg_c",
-        "day-air-tmp-max":  "tmp_max_c",
-        "day-air-tmp-min":  "tmp_min_c",
-        "day-rel-hum-avg":  "rh_avg_pct",
-        "day-sol-rad-avg":  "sol_rad_avg_wm2",
-        "day-wind-spd-avg": "wind_spd_avg_ms",
-        "day-wind-run":     "wind_run_km",
-        "day-precip":       "precip_mm",
-        "day-eto":          "eto_mm",
-    }
+    daily = raw.get("daily", {})
+    dates = daily.get("time", [])
     days_out = []
-    for provider in raw.get("Data", {}).get("Providers", []):
-        for record in provider.get("Records", []):
-            day = {"date": record.get("Date", "")[:10]}
-            for item in record.get("DayData", []):
-                key = item_map.get(item.get("Item", ""))
-                val = item.get("Value")
-                if key:
-                    try:
-                        day[key] = float(val) if val not in (None, "", " ") else None
-                    except (ValueError, TypeError):
-                        day[key] = None
-            days_out.append(day)
+    for i, date_str in enumerate(dates):
+        def val(key):
+            v = daily.get(key, [None] * (i+1))[i]
+            return float(v) if v is not None else None
+
+        rad_mj   = val("shortwave_radiation_sum")
+        wind_ms  = val("wind_speed_10m_mean")
+        days_out.append({
+            "date":            date_str,
+            "tmp_avg_c":       val("temperature_2m_mean"),
+            "tmp_max_c":       val("temperature_2m_max"),
+            "tmp_min_c":       val("temperature_2m_min"),
+            "rh_avg_pct":      val("relative_humidity_2m_mean"),
+            "sol_rad_avg_wm2": round(rad_mj * 1e6 / 86400, 2) if rad_mj is not None else None,
+            "wind_spd_avg_ms": round(wind_ms / 3.6, 3) if wind_ms is not None else None,
+            "precip_mm":       val("precipitation_sum"),
+            "eto_mm":          val("et0_fao_evapotranspiration"),
+        })
     return days_out
 
 
@@ -297,7 +295,7 @@ Tribal monitoring data — Big Valley Band of Pomo Indians (source: bvrancheria.
 
             avg = lambda v: round(sum(v)/len(v), 1) if v else None
             cimis_block = f"""
-CIMIS weather — Station #106 Sanel Valley (27km from Clear Lake), last 7 days:
+Weather at Clear Lake (Open-Meteo), last 7 days:
 - Avg air temp: {avg(tmp_vals)} °C  |  Avg wind speed: {avg(wind_vals)} m/s  |  Calm days (<2 m/s): {calm_days}/7
 - Avg solar radiation: {avg(rad_vals)} W/m²  |  Total precip: {round(sum(prcp_vals),1) if prcp_vals else 'N/A'} mm
 - Calm, warm, sunny conditions favor surface bloom accumulation."""
@@ -374,13 +372,11 @@ def run_advisory(lat, lon, visit_date, activity="swimming"):
     swamp_status = load_swamp_status()
     swamp_obs    = load_recent_swamp_obs(10)
 
-    print("Fetching CIMIS weather (Station #106, last 14 days)...")
-    cimis_weather = fetch_recent_cimis(days=14)
+    print("Fetching weather data (Open-Meteo, last 14 days + 3-day forecast)...")
+    cimis_weather = fetch_recent_weather(past_days=14)
     if cimis_weather:
         valid_w = [w for w in cimis_weather if w.get("tmp_avg_c") is not None]
         print(f"  Retrieved {len(valid_w)} days with temperature data")
-    else:
-        print("  CIMIS_APP_KEY not set — weather data skipped (set key to enable)")
 
     print("Loading BV Pomo tribal monitoring data...")
     bvpomo_status, bvpomo_peaks = load_bvpomo_status()
@@ -414,18 +410,13 @@ def run_advisory(lat, lon, visit_date, activity="swimming"):
             "tier":    tier_label,
             "message": tier_msg,
         },
-        "cimis_weather": {
-            "station":        "106 Sanel Valley (27km from Clear Lake)",
-            "days_retrieved": len([w for w in cimis_weather if w.get("tmp_avg_c") is not None]),
-            "source":         "CIMIS — CA Dept of Water Resources",
-            "note":           "Set CIMIS_APP_KEY env var to enable live weather data",
-        } if not cimis_weather else {
-            "station":        "106 Sanel Valley (27km from Clear Lake)",
+        "weather": {
+            "source":         "Open-Meteo (archive-api + forecast API, Clear Lake coords)",
             "days_retrieved": len([w for w in cimis_weather if w.get("tmp_avg_c") is not None]),
             "latest_date":    max((w["date"] for w in cimis_weather if w.get("date")), default=None),
             "latest_tmp_avg_c": next((w["tmp_avg_c"] for w in reversed(cimis_weather) if w.get("tmp_avg_c") is not None), None),
             "latest_wind_spd_ms": next((w["wind_spd_avg_ms"] for w in reversed(cimis_weather) if w.get("wind_spd_avg_ms") is not None), None),
-            "source":         "CIMIS — CA Dept of Water Resources",
+            "note": "Includes 3-day forecast; historical training data via CIMIS-equivalent variables",
         },
         "bvpomo_tribal_monitoring": {
             "source":                    "Big Valley Band of Pomo Indians",

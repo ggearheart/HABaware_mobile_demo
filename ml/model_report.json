@@ -1,4 +1,6 @@
 {
+  "feature_set": "satellite_only",
+  "n_features": 15,
   "train_samples": 2922,
   "test_samples": 365,
   "test_rmse": 67.1263,

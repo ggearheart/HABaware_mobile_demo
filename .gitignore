@@ -1,0 +1,6 @@
+.env
+__pycache__/
+*.pyc
+data/raw/weather/
+data/processed/clear_lake_features.csv
+ml/model.pkl

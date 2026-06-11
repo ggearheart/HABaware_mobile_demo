@@ -1,0 +1,60 @@
+{
+  "source": "Big Valley Band of Pomo Indians",
+  "url": "https://www.bvrancheria.com/historical-cyanotoxin-data",
+  "monitoring_period": "2014\u20132024 (biweekly May\u2013Oct; monthly Jan\u2013Apr)",
+  "latest_sampling_date": "2024-10-02",
+  "n_sites_monitored": 23,
+  "latest_danger_sites": [],
+  "latest_warning_sites": [],
+  "latest_caution_sites": [
+    "AP01",
+    "CLOAKS01",
+    "GH",
+    "HB",
+    "JB",
+    "KEYS03",
+    "KP01",
+    "LC01",
+    "RED01",
+    "SHADY01"
+  ],
+  "sites_100pct_elevated_summer_2024": [
+    "AP01",
+    "RED01",
+    "JB",
+    "SHADY01",
+    "CL-3"
+  ],
+  "peak_2024": {
+    "analyte": "Microcystins total",
+    "value_ug_L": 16025,
+    "site": "LC01 (Lily Cove, Lower Arm)",
+    "date": "2024-06-25",
+    "times_above_danger": "1,000\u00d7"
+  },
+  "peak_all_time": {
+    "analyte": "Microcystins total",
+    "value_ug_L": 160378,
+    "site": "RED01 (Redbud Park, Lower Arm)",
+    "year": 2021,
+    "times_above_state_standard": "200,000\u00d7"
+  },
+  "key_finding": "Ten of eleven monitoring years had Danger-level microcystin at \u22651 location. Six of those ten were in the Lower Arm. All peak values exceeded the Danger trigger (20 \u00b5g/L) by at least 10\u00d7, most by 100\u20131,000\u00d7.",
+  "arm_risk_summary_summer_2024": {
+    "Lower": "94% of sampling events above Caution; highest absolute toxin levels",
+    "Oaks": "79% above Caution; more Danger-level events than other arms",
+    "Upper": "31% above Caution; generally lower but elevated at several sites"
+  },
+  "analytes_detected_2024": [
+    "Microcystins total"
+  ],
+  "analytes_gene_copies_only_2024": [
+    "Saxitoxin",
+    "Anatoxin-a"
+  ],
+  "thresholds_ug_L": {
+    "caution": 0.8,
+    "warning": 6.0,
+    "danger": 20.0
+  }
+}

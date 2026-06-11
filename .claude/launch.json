@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "habaware-preview",
+      "runtimeExecutable": "/tmp/hab_env/bin/python3",
+      "runtimeArgs": ["app/server.py"],
+      "port": 5050
+    }
+  ]
+}
