@@ -1,0 +1,13 @@
+source,year,site_id,site_name,arm,lat,lon,analyte,peak_ug_L,notes,data_type
+BV Pomo,2014,CLOAKS01,Clover/Oaks,O,39.005,-122.845,Microcystins total,16920,100% exceedance at CLOAKS01 and SBMMEL01,annual_peak
+BV Pomo,2015,AP01,Austin Park,L,38.9572,-122.6419,Microcystins total,10162,AP01 highest; 41% exceedance across 17 samples,annual_peak
+BV Pomo,2016,SBMMEL01,Sulphur Bank Mercury Mine,O,38.9984,-122.8832,Microcystins total,0.67,Low toxin year; no sites exceeded 0.8 µg/L threshold,annual_peak
+BV Pomo,2017,AP01,Austin Park,L,38.9572,-122.6419,Microcystins total,5554,AP01 highest single reading,annual_peak
+BV Pomo,2018,SBMMEL01,Sulphur Bank Mercury Mine,O,38.9984,-122.8832,Microcystins total,4880,SBMMEL01 highest; multiple Danger events,annual_peak
+BV Pomo,2019,,,,,,Microcystins total,,No machine-readable PDF available,annual_peak
+BV Pomo,2020,,,,,,Microcystins total,,PDF not accessible (download error),annual_peak
+BV Pomo,2021,RED01,Redbud Park,L,38.9563,-122.6274,Microcystins total,160378,"200,000x above State recreational standard; tap water advisory issued",annual_peak
+BV Pomo,2021,SHADY01,Cache Creek / Shady Acres,L,38.955,-122.62,Anatoxin-a,35.42,Warning level anatoxin-a at Cache Creek outflow,annual_peak
+BV Pomo,2022,CLOAKS01,Clover/Oaks,O,39.005,-122.845,Microcystins total,790,Lower than 2021; Oaks arm highest,annual_peak
+BV Pomo,2023,,,,,,Microcystins total,,Report pending per bvrancheria.com,annual_peak
+BV Pomo,2024,LC01,Lily Cove,L,38.958,-122.648,Microcystins total,16025,"1,000x above Danger trigger; tap water positive in 1 of 2 homes tested",annual_peak

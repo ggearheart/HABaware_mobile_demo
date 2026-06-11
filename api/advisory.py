@@ -16,8 +16,10 @@ import urllib.request
 from datetime import date, timedelta
 from pathlib import Path
 
-SWAMP_STATUS_PATH = Path(__file__).parent.parent / "data/processed/clear_lake_current_status.json"
-SWAMP_OBS_PATH    = Path(__file__).parent.parent / "data/processed/clear_lake_observations.csv"
+SWAMP_STATUS_PATH  = Path(__file__).parent.parent / "data/processed/clear_lake_current_status.json"
+SWAMP_OBS_PATH     = Path(__file__).parent.parent / "data/processed/clear_lake_observations.csv"
+BVPOMO_STATUS_PATH = Path(__file__).parent.parent / "data/processed/bvpomo_current_status.json"
+BVPOMO_PEAKS_PATH  = Path(__file__).parent.parent / "data/processed/bvpomo_annual_peaks.csv"
 
 FHAB_BASE   = "https://fhab-api.sfei.org"
 CLEAR_LAKE_WID = 33
@@ -131,11 +133,25 @@ def load_recent_swamp_obs(n=10):
         rows = list(csv.DictReader(f))
     return rows[-n:] if len(rows) >= n else rows
 
+def load_bvpomo_status():
+    """Load BV Pomo current status and recent annual peaks."""
+    import csv
+    status = {}
+    if BVPOMO_STATUS_PATH.exists():
+        with open(BVPOMO_STATUS_PATH) as f:
+            status = json.load(f)
+    peaks = []
+    if BVPOMO_PEAKS_PATH.exists():
+        with open(BVPOMO_PEAKS_PATH) as f:
+            peaks = list(csv.DictReader(f))
+    return status, peaks
+
 
 # ── GenAI advisory via Claude ─────────────────────────────────────────────────
 
 def generate_advisory(lat, lon, visit_date, activity, ci_current, ci_forecast,
-                       tier_label, tier_msg, recent_records, swamp_status, swamp_obs):
+                       tier_label, tier_msg, recent_records, swamp_status, swamp_obs,
+                       bvpomo_status, bvpomo_peaks):
     """Call Claude to generate a plain-language risk advisory."""
     try:
         import anthropic
@@ -182,6 +198,32 @@ def generate_advisory(lat, lon, visit_date, activity, ci_current, ci_forecast,
         for r in swamp_obs[-5:]
     )
 
+    # BV Pomo block
+    bvp = bvpomo_status
+    bvpomo_block = ""
+    if bvp:
+        caution_sites = ", ".join(bvp.get("latest_caution_sites", [])[:5]) or "none"
+        danger_sites  = ", ".join(bvp.get("latest_danger_sites",  [])[:5]) or "none"
+        arm_summary   = bvp.get("arm_risk_summary_summer_2024", {})
+        peak_2024     = bvp.get("peak_2024", {})
+        peak_alltime  = bvp.get("peak_all_time", {})
+        recent_peaks  = [p for p in bvpomo_peaks[-4:] if p.get("peak_ug_L")]
+
+        bvpomo_block = f"""
+Tribal monitoring data — Big Valley Band of Pomo Indians (source: bvrancheria.com, 2014–2024):
+- Latest sampling: {bvp.get('latest_sampling_date','?')} across {bvp.get('n_sites_monitored','?')} shoreline sites
+- Latest Danger sites: {danger_sites}
+- Latest Caution sites: {caution_sites}
+- Sites at elevated toxin levels 100% of summer 2024: {', '.join(bvp.get('sites_100pct_elevated_summer_2024',[]))}
+- Arm risk (summer 2024): Lower={arm_summary.get('Lower','?')} | Oaks={arm_summary.get('Oaks','?')} | Upper={arm_summary.get('Upper','?')}
+- Peak 2024: {peak_2024.get('value_ug_L','?')} µg/L microcystin at {peak_2024.get('site','?')} on {peak_2024.get('date','?')} ({peak_2024.get('times_above_danger','?')} above Danger trigger)
+- All-time peak: {peak_alltime.get('value_ug_L','?')} µg/L microcystin at {peak_alltime.get('site','?')} in {peak_alltime.get('year','?')} ({peak_alltime.get('times_above_state_standard','?')} above state standard)
+- Key finding: {bvp.get('key_finding','')}"""
+
+        if recent_peaks:
+            bvpomo_block += "\n- Recent annual lake-wide peaks (µg/L microcystin): " + \
+                ", ".join(f"{p['year']}:{p['peak_ug_L']}" for p in recent_peaks)
+
     system = """You are HABaware, a public health advisory assistant specializing in
 harmful algal bloom (HAB) risk at California waterbodies. You communicate risk clearly,
 accurately, and without either alarming or dismissing. You always ground your advice in
@@ -204,8 +246,9 @@ Recent 7-day satellite trend:
 {trend_lines}
 
 {swamp_block}
+{bvpomo_block}
 
-Recent field reports (most recent first):
+Recent SWAMP field reports (most recent first):
 {obs_lines}
 
 Write a plain-language advisory addressed to the visitor. Include:
@@ -251,6 +294,13 @@ def run_advisory(lat, lon, visit_date, activity="swimming"):
     print("Loading SWAMP ground-truth data...")
     swamp_status = load_swamp_status()
     swamp_obs    = load_recent_swamp_obs(10)
+
+    print("Loading BV Pomo tribal monitoring data...")
+    bvpomo_status, bvpomo_peaks = load_bvpomo_status()
+    if bvpomo_status:
+        print(f"  Latest sampling: {bvpomo_status.get('latest_sampling_date','?')}, "
+              f"{len(bvpomo_status.get('latest_caution_sites',[]))} caution / "
+              f"{len(bvpomo_status.get('latest_danger_sites',[]))} danger sites")
     if swamp_status:
         print(f"  Open case: {swamp_status.get('open_case',{}).get('case_id','?')} "
               f"({swamp_status.get('open_case',{}).get('status','?')})")
@@ -261,7 +311,7 @@ def run_advisory(lat, lon, visit_date, activity="swimming"):
     advisory_text = generate_advisory(
         lat, lon, visit_date, activity,
         ci_current, ci_forecast, tier_label, tier_msg, records,
-        swamp_status, swamp_obs
+        swamp_status, swamp_obs, bvpomo_status, bvpomo_peaks
     )
 
     result = {
@@ -277,6 +327,16 @@ def run_advisory(lat, lon, visit_date, activity="swimming"):
             "tier":    tier_label,
             "message": tier_msg,
         },
+        "bvpomo_tribal_monitoring": {
+            "source":                    "Big Valley Band of Pomo Indians",
+            "latest_sampling_date":      bvpomo_status.get("latest_sampling_date"),
+            "n_sites_monitored":         bvpomo_status.get("n_sites_monitored"),
+            "latest_danger_sites":       bvpomo_status.get("latest_danger_sites"),
+            "latest_caution_sites":      bvpomo_status.get("latest_caution_sites"),
+            "peak_2024_ug_L":            bvpomo_status.get("peak_2024", {}).get("value_ug_L"),
+            "peak_alltime_ug_L":         bvpomo_status.get("peak_all_time", {}).get("value_ug_L"),
+            "key_finding":               bvpomo_status.get("key_finding"),
+        } if bvpomo_status else {},
         "swamp_ground_truth": {
             "data_as_of":              swamp_status.get("data_as_of"),
             "open_case_id":            swamp_status.get("open_case", {}).get("case_id"),

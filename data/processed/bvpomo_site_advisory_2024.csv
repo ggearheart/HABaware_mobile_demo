@@ -1,0 +1,185 @@
+source,date,site_id,arm,site_name,lat,lon,analyte,advisory_level,advisory_rank,data_type
+BV Pomo,2024-06-10,AP01,L,Austin Park,38.9572,-122.6419,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-06-25,AP01,L,Austin Park,38.9572,-122.6419,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-07-10,AP01,L,Austin Park,38.9572,-122.6419,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-08-06,AP01,L,Austin Park,38.9572,-122.6419,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-08-20,AP01,L,Austin Park,38.9572,-122.6419,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-09-04,AP01,L,Austin Park,38.9572,-122.6419,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-09-18,AP01,L,Austin Park,38.9572,-122.6419,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-10-02,AP01,L,Austin Park,38.9572,-122.6419,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-10,BP,L,Buckingham,38.9701,-122.6602,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,BP,L,Buckingham,38.9701,-122.6602,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-07-10,BP,L,Buckingham,38.9701,-122.6602,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-08-06,BP,L,Buckingham,38.9701,-122.6602,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-08-20,BP,L,Buckingham,38.9701,-122.6602,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-09-04,BP,L,Buckingham,38.9701,-122.6602,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-09-18,BP,L,Buckingham,38.9701,-122.6602,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-10-02,BP,L,Buckingham,38.9701,-122.6602,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-10,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-07-10,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-08-06,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-08-20,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-09-04,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-09-18,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-10-02,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-10,CL-1,U,Clear Lake Site 1,39.05,-122.8,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,CL-1,U,Clear Lake Site 1,39.05,-122.8,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-07-10,CL-1,U,Clear Lake Site 1,39.05,-122.8,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-08-06,CL-1,U,Clear Lake Site 1,39.05,-122.8,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-08-20,CL-1,U,Clear Lake Site 1,39.05,-122.8,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-09-04,CL-1,U,Clear Lake Site 1,39.05,-122.8,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-09-18,CL-1,U,Clear Lake Site 1,39.05,-122.8,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-10-02,CL-1,U,Clear Lake Site 1,39.05,-122.8,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-06-10,CL-3,L,Clear Lake Site 3,38.98,-122.65,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-25,CL-3,L,Clear Lake Site 3,38.98,-122.65,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-07-10,CL-3,L,Clear Lake Site 3,38.98,-122.65,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-08-06,CL-3,L,Clear Lake Site 3,38.98,-122.65,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-08-20,CL-3,L,Clear Lake Site 3,38.98,-122.65,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-09-04,CL-3,L,Clear Lake Site 3,38.98,-122.65,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-09-18,CL-3,L,Clear Lake Site 3,38.98,-122.65,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-10-02,CL-3,L,Clear Lake Site 3,38.98,-122.65,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-06-10,CL-4,O,Clear Lake Site 4,39.01,-122.83,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-25,CL-4,O,Clear Lake Site 4,39.01,-122.83,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-07-10,CL-4,O,Clear Lake Site 4,39.01,-122.83,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-08-06,CL-4,O,Clear Lake Site 4,39.01,-122.83,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-08-20,CL-4,O,Clear Lake Site 4,39.01,-122.83,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-09-04,CL-4,O,Clear Lake Site 4,39.01,-122.83,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-09-18,CL-4,O,Clear Lake Site 4,39.01,-122.83,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-10-02,CL-4,O,Clear Lake Site 4,39.01,-122.83,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-06-10,CLOAKS01,O,Clover/Oaks,39.005,-122.845,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,CLOAKS01,O,Clover/Oaks,39.005,-122.845,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-07-10,CLOAKS01,O,Clover/Oaks,39.005,-122.845,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-08-06,CLOAKS01,O,Clover/Oaks,39.005,-122.845,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-08-20,CLOAKS01,O,Clover/Oaks,39.005,-122.845,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-09-04,CLOAKS01,O,Clover/Oaks,39.005,-122.845,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-09-18,CLOAKS01,O,Clover/Oaks,39.005,-122.845,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-10-02,CLOAKS01,O,Clover/Oaks,39.005,-122.845,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-10,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-07-10,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-08-06,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-08-20,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-09-04,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-09-18,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-10-02,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-10,CP,U,Cache Point,39.045,-122.79,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,CP,U,Cache Point,39.045,-122.79,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-07-10,CP,U,Cache Point,39.045,-122.79,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-08-06,CP,U,Cache Point,39.045,-122.79,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-08-20,CP,U,Cache Point,39.045,-122.79,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-09-04,CP,U,Cache Point,39.045,-122.79,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-09-18,CP,U,Cache Point,39.045,-122.79,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-10-02,CP,U,Cache Point,39.045,-122.79,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-10,FC3,U,Finley Creek 3,39.06,-122.78,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,FC3,U,Finley Creek 3,39.06,-122.78,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-07-10,FC3,U,Finley Creek 3,39.06,-122.78,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-08-06,FC3,U,Finley Creek 3,39.06,-122.78,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-08-20,FC3,U,Finley Creek 3,39.06,-122.78,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-09-04,FC3,U,Finley Creek 3,39.06,-122.78,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-09-18,FC3,U,Finley Creek 3,39.06,-122.78,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-10-02,FC3,U,Finley Creek 3,39.06,-122.78,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-06-10,ELEM01,O,Elem Indian Colony,38.993,-122.876,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-25,ELEM01,O,Elem Indian Colony,38.993,-122.876,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-07-10,ELEM01,O,Elem Indian Colony,38.993,-122.876,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-08-06,ELEM01,O,Elem Indian Colony,38.993,-122.876,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-08-20,ELEM01,O,Elem Indian Colony,38.993,-122.876,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-09-04,ELEM01,O,Elem Indian Colony,38.993,-122.876,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-09-18,ELEM01,O,Elem Indian Colony,38.993,-122.876,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-10-02,ELEM01,O,Elem Indian Colony,38.993,-122.876,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-10,GH,O,Glenhaven,39.018,-122.855,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-25,GH,O,Glenhaven,39.018,-122.855,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-07-10,GH,O,Glenhaven,39.018,-122.855,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-08-06,GH,O,Glenhaven,39.018,-122.855,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-08-20,GH,O,Glenhaven,39.018,-122.855,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-09-04,GH,O,Glenhaven,39.018,-122.855,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-09-18,GH,O,Glenhaven,39.018,-122.855,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-10-02,GH,O,Glenhaven,39.018,-122.855,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-10,HB,U,Highlands Beach,39.035,-122.77,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-06-25,HB,U,Highlands Beach,39.035,-122.77,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-07-10,HB,U,Highlands Beach,39.035,-122.77,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-08-06,HB,U,Highlands Beach,39.035,-122.77,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-08-20,HB,U,Highlands Beach,39.035,-122.77,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-09-04,HB,U,Highlands Beach,39.035,-122.77,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-09-18,HB,U,Highlands Beach,39.035,-122.77,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-10-02,HB,U,Highlands Beach,39.035,-122.77,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-10,JB,L,Jago Bay,38.965,-122.67,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-06-25,JB,L,Jago Bay,38.965,-122.67,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-07-10,JB,L,Jago Bay,38.965,-122.67,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-08-06,JB,L,Jago Bay,38.965,-122.67,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-08-20,JB,L,Jago Bay,38.965,-122.67,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-09-04,JB,L,Jago Bay,38.965,-122.67,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-09-18,JB,L,Jago Bay,38.965,-122.67,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-10-02,JB,L,Jago Bay,38.965,-122.67,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-10,KEYS03,O,Kelseyville Shore,38.99,-122.86,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,KEYS03,O,Kelseyville Shore,38.99,-122.86,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-07-10,KEYS03,O,Kelseyville Shore,38.99,-122.86,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-08-06,KEYS03,O,Kelseyville Shore,38.99,-122.86,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-08-20,KEYS03,O,Kelseyville Shore,38.99,-122.86,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-09-04,KEYS03,O,Kelseyville Shore,38.99,-122.86,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-09-18,KEYS03,O,Kelseyville Shore,38.99,-122.86,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-10-02,KEYS03,O,Kelseyville Shore,38.99,-122.86,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-10,KP01,U,Konocti Park,39.028,-122.78,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,KP01,U,Konocti Park,39.028,-122.78,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-07-10,KP01,U,Konocti Park,39.028,-122.78,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-08-06,KP01,U,Konocti Park,39.028,-122.78,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-08-20,KP01,U,Konocti Park,39.028,-122.78,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-09-04,KP01,U,Konocti Park,39.028,-122.78,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-09-18,KP01,U,Konocti Park,39.028,-122.78,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-10-02,KP01,U,Konocti Park,39.028,-122.78,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-10,LC01,L,Lily Cove,38.958,-122.648,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,LC01,L,Lily Cove,38.958,-122.648,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-07-10,LC01,L,Lily Cove,38.958,-122.648,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-08-06,LC01,L,Lily Cove,38.958,-122.648,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-08-20,LC01,L,Lily Cove,38.958,-122.648,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-09-04,LC01,L,Lily Cove,38.958,-122.648,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-09-18,LC01,L,Lily Cove,38.958,-122.648,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-10-02,LC01,L,Lily Cove,38.958,-122.648,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-10,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-07-10,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-08-06,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-08-20,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-09-04,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-09-18,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-10-02,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-10,LUC01,U,Lucerne,39.0483,-122.7986,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,LUC01,U,Lucerne,39.0483,-122.7986,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-07-10,LUC01,U,Lucerne,39.0483,-122.7986,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-08-06,LUC01,U,Lucerne,39.0483,-122.7986,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-08-20,LUC01,U,Lucerne,39.0483,-122.7986,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-09-04,LUC01,U,Lucerne,39.0483,-122.7986,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-09-18,LUC01,U,Lucerne,39.0483,-122.7986,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-10-02,LUC01,U,Lucerne,39.0483,-122.7986,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-10,RED01,L,Redbud Park,38.9563,-122.6274,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-06-25,RED01,L,Redbud Park,38.9563,-122.6274,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-07-10,RED01,L,Redbud Park,38.9563,-122.6274,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-08-06,RED01,L,Redbud Park,38.9563,-122.6274,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-08-20,RED01,L,Redbud Park,38.9563,-122.6274,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-09-04,RED01,L,Redbud Park,38.9563,-122.6274,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-09-18,RED01,L,Redbud Park,38.9563,-122.6274,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-10-02,RED01,L,Redbud Park,38.9563,-122.6274,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-10,RODS,U,Rods Beach,39.051,-122.775,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,RODS,U,Rods Beach,39.051,-122.775,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-07-10,RODS,U,Rods Beach,39.051,-122.775,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-08-06,RODS,U,Rods Beach,39.051,-122.775,Microcystins total,N/A,-1,advisory_level
+BV Pomo,2024-08-20,RODS,U,Rods Beach,39.051,-122.775,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-09-04,RODS,U,Rods Beach,39.051,-122.775,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-09-18,RODS,U,Rods Beach,39.051,-122.775,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-10-02,RODS,U,Rods Beach,39.051,-122.775,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-10,SBMMEL01,O,Sulphur Bank Mercury Mine,38.9984,-122.8832,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-25,SBMMEL01,O,Sulphur Bank Mercury Mine,38.9984,-122.8832,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-07-10,SBMMEL01,O,Sulphur Bank Mercury Mine,38.9984,-122.8832,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-08-06,SBMMEL01,O,Sulphur Bank Mercury Mine,38.9984,-122.8832,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-08-20,SBMMEL01,O,Sulphur Bank Mercury Mine,38.9984,-122.8832,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-09-04,SBMMEL01,O,Sulphur Bank Mercury Mine,38.9984,-122.8832,Microcystins total,DANGER,3,advisory_level
+BV Pomo,2024-09-18,SBMMEL01,O,Sulphur Bank Mercury Mine,38.9984,-122.8832,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-10-02,SBMMEL01,O,Sulphur Bank Mercury Mine,38.9984,-122.8832,Microcystins total,NONE,0,advisory_level
+BV Pomo,2024-06-10,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-06-25,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-07-10,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-08-06,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-08-20,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-09-04,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Microcystins total,WARNING,2,advisory_level
+BV Pomo,2024-09-18,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Microcystins total,CAUTION,1,advisory_level
+BV Pomo,2024-10-02,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Microcystins total,CAUTION,1,advisory_level

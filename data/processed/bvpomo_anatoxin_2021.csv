@@ -1,0 +1,23 @@
+source,date,site_id,arm,site_name,lat,lon,analyte,value_ug_L,qualifier,data_type
+BV Pomo,2021-07-28,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Anatoxin-a,2.49,,point_measurement
+BV Pomo,2021-07-28,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Anatoxin-a,,ND,point_measurement
+BV Pomo,2021-08-11,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Anatoxin-a,,ND,point_measurement
+BV Pomo,2021-08-11,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Anatoxin-a,2.63,,point_measurement
+BV Pomo,2021-08-11,KEYS03,O,Kelseyville Shore,38.99,-122.86,Anatoxin-a,0.19,,point_measurement
+BV Pomo,2021-08-11,LUC01,U,Lucerne,39.0483,-122.7986,Anatoxin-a,0.18,,point_measurement
+BV Pomo,2021-08-25,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Anatoxin-a,12.9,,point_measurement
+BV Pomo,2021-08-25,KEYS03,O,Kelseyville Shore,38.99,-122.86,Anatoxin-a,0.14,,point_measurement
+BV Pomo,2021-08-25,LUC01,U,Lucerne,39.0483,-122.7986,Anatoxin-a,0.7,,point_measurement
+BV Pomo,2021-08-25,ELEM01,O,Elem Indian Colony,38.993,-122.876,Anatoxin-a,,ND,point_measurement
+BV Pomo,2021-08-25,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Anatoxin-a,0.14,,point_measurement
+BV Pomo,2021-08-25,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Anatoxin-a,,ND,point_measurement
+BV Pomo,2021-09-07,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Anatoxin-a,25.95,,point_measurement
+BV Pomo,2021-09-07,KEYS03,O,Kelseyville Shore,38.99,-122.86,Anatoxin-a,0.3,,point_measurement
+BV Pomo,2021-09-07,LUC01,U,Lucerne,39.0483,-122.7986,Anatoxin-a,0.27,,point_measurement
+BV Pomo,2021-09-21,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Anatoxin-a,0.17,,point_measurement
+BV Pomo,2021-09-21,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Anatoxin-a,33.61,,point_measurement
+BV Pomo,2021-09-21,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Anatoxin-a,0.17,,point_measurement
+BV Pomo,2021-09-21,ELEM01,O,Elem Indian Colony,38.993,-122.876,Anatoxin-a,0.32,,point_measurement
+BV Pomo,2021-09-21,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Anatoxin-a,0.17,,point_measurement
+BV Pomo,2021-09-21,KP01,U,Konocti Park,39.028,-122.78,Anatoxin-a,0.25,,point_measurement
+BV Pomo,2021-10-12,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Anatoxin-a,35.42,,point_measurement

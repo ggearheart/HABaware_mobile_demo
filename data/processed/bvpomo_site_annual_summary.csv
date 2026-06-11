@@ -1,0 +1,82 @@
+source,year,site_id,arm,site_name,lat,lon,analyte,peak_ug_L,peak_qualifier,pct_exceed_0_8,n_samples,data_type
+BV Pomo,2014,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Microcystins total,1.2,,17.0,6,annual_summary
+BV Pomo,2015,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Microcystins total,,ND,0.0,20,annual_summary
+BV Pomo,2016,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Microcystins total,0.14,,0.0,9,annual_summary
+BV Pomo,2017,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Microcystins total,0.21,,0.0,8,annual_summary
+BV Pomo,2018,BVCL6,U,Big Valley Rancheria,39.0223,-122.7643,Microcystins total,,ND,0.0,11,annual_summary
+BV Pomo,2014,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Microcystins total,105.0,,86.0,7,annual_summary
+BV Pomo,2015,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Microcystins total,,ND,0.0,13,annual_summary
+BV Pomo,2016,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Microcystins total,0.34,,0.0,9,annual_summary
+BV Pomo,2017,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Microcystins total,3.5,,13.0,8,annual_summary
+BV Pomo,2018,CLV7,U,Clear Lake Village 7,39.0419,-122.8018,Microcystins total,13.0,,9.0,11,annual_summary
+BV Pomo,2014,M4,U,Marina Site 4,39.04,-122.79,Microcystins total,8.3,,33.0,6,annual_summary
+BV Pomo,2015,M4,U,Marina Site 4,39.04,-122.79,Microcystins total,,ND,0.0,14,annual_summary
+BV Pomo,2014,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Microcystins total,877.6,,83.0,6,annual_summary
+BV Pomo,2015,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Microcystins total,,ND,0.0,12,annual_summary
+BV Pomo,2016,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Microcystins total,0.17,,0.0,9,annual_summary
+BV Pomo,2017,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Microcystins total,0.14,,0.0,8,annual_summary
+BV Pomo,2018,LPTNT,U,Library Park/TNT,39.0395,-122.7966,Microcystins total,,ND,0.0,11,annual_summary
+BV Pomo,2015,RODS,U,Rods Beach,39.051,-122.775,Microcystins total,,ND,0.0,12,annual_summary
+BV Pomo,2016,RODS,U,Rods Beach,39.051,-122.775,Microcystins total,0.15,,0.0,9,annual_summary
+BV Pomo,2017,RODS,U,Rods Beach,39.051,-122.775,Microcystins total,0.11,,0.0,8,annual_summary
+BV Pomo,2018,RODS,U,Rods Beach,39.051,-122.775,Microcystins total,,ND,0.0,9,annual_summary
+BV Pomo,2015,CP,U,Cache Point,39.045,-122.79,Microcystins total,,ND,0.0,11,annual_summary
+BV Pomo,2016,CP,U,Cache Point,39.045,-122.79,Microcystins total,0.16,,0.0,9,annual_summary
+BV Pomo,2017,CP,U,Cache Point,39.045,-122.79,Microcystins total,,ND,0.0,9,annual_summary
+BV Pomo,2018,CP,U,Cache Point,39.045,-122.79,Microcystins total,2.9,,11.0,9,annual_summary
+BV Pomo,2015,LS,U,Lakeshore,39.048,-122.785,Microcystins total,,Trace,0.0,11,annual_summary
+BV Pomo,2016,LS,U,Lakeshore,39.048,-122.785,Microcystins total,0.11,,0.0,9,annual_summary
+BV Pomo,2017,LS2,U,Lakeshore 2,39.046,-122.787,Microcystins total,0.12,,0.0,3,annual_summary
+BV Pomo,2018,LS2,U,Lakeshore 2,39.046,-122.787,Microcystins total,0.11,,0.0,10,annual_summary
+BV Pomo,2014,LUC01,U,Lucerne,39.0483,-122.7986,Microcystins total,13.0,,67.0,6,annual_summary
+BV Pomo,2015,LUC01,U,Lucerne,39.0483,-122.7986,Microcystins total,,ND,0.0,13,annual_summary
+BV Pomo,2016,LUC01,U,Lucerne,39.0483,-122.7986,Microcystins total,0.14,,0.0,9,annual_summary
+BV Pomo,2017,LUC01,U,Lucerne,39.0483,-122.7986,Microcystins total,,ND,0.0,8,annual_summary
+BV Pomo,2018,LUC01,U,Lucerne,39.0483,-122.7986,Microcystins total,,ND,0.0,11,annual_summary
+BV Pomo,2015,HB,U,Highlands Beach,39.035,-122.77,Microcystins total,,Trace,0.0,9,annual_summary
+BV Pomo,2016,HB,U,Highlands Beach,39.035,-122.77,Microcystins total,0.12,,0.0,8,annual_summary
+BV Pomo,2017,HB,U,Highlands Beach,39.035,-122.77,Microcystins total,0.35,,0.0,8,annual_summary
+BV Pomo,2018,HB,U,Highlands Beach,39.035,-122.77,Microcystins total,0.16,,0.0,10,annual_summary
+BV Pomo,2015,KP01,U,Konocti Park,39.028,-122.78,Microcystins total,,ND,0.0,12,annual_summary
+BV Pomo,2016,KP01,U,Konocti Park,39.028,-122.78,Microcystins total,0.15,,0.0,9,annual_summary
+BV Pomo,2017,KP01,U,Konocti Park,39.028,-122.78,Microcystins total,0.34,,0.0,8,annual_summary
+BV Pomo,2018,KP01,U,Konocti Park,39.028,-122.78,Microcystins total,4.0,,11.0,9,annual_summary
+BV Pomo,2014,ELEM01,O,Elem Indian Colony,38.993,-122.876,Microcystins total,4.4,,50.0,4,annual_summary
+BV Pomo,2015,ELEM01,O,Elem Indian Colony,38.993,-122.876,Microcystins total,18.7,,29.0,14,annual_summary
+BV Pomo,2017,ELEM01,O,Elem Indian Colony,38.993,-122.876,Microcystins total,0.38,,0.0,7,annual_summary
+BV Pomo,2018,ELEM01,O,Elem Indian Colony,38.993,-122.876,Microcystins total,4.9,,27.0,11,annual_summary
+BV Pomo,2014,SBMMEL01,O,Sulphur Bank Mercury Mine,38.9984,-122.8832,Microcystins total,5311.7,,100.0,7,annual_summary
+BV Pomo,2015,SBMMEL01,O,Sulphur Bank Mercury Mine,38.9984,-122.8832,Microcystins total,278.0,,20.0,10,annual_summary
+BV Pomo,2016,SBMMEL01,O,Sulphur Bank Mercury Mine,38.9984,-122.8832,Microcystins total,0.67,,0.0,9,annual_summary
+BV Pomo,2017,SBMMEL01,O,Sulphur Bank Mercury Mine,38.9984,-122.8832,Microcystins total,2.4,,25.0,8,annual_summary
+BV Pomo,2018,SBMMEL01,O,Sulphur Bank Mercury Mine,38.9984,-122.8832,Microcystins total,4880.0,,10.0,10,annual_summary
+BV Pomo,2014,CLOAKS01,O,Clover/Oaks,39.005,-122.845,Microcystins total,16920.0,,100.0,7,annual_summary
+BV Pomo,2015,CLOAKS01,O,Clover/Oaks,39.005,-122.845,Microcystins total,21.0,,31.0,16,annual_summary
+BV Pomo,2016,CLOAKS01,O,Clover/Oaks,39.005,-122.845,Microcystins total,0.16,,0.0,9,annual_summary
+BV Pomo,2017,CLOAKS01,O,Clover/Oaks,39.005,-122.845,Microcystins total,46.0,,13.0,8,annual_summary
+BV Pomo,2018,CLOAKS01,O,Clover/Oaks,39.005,-122.845,Microcystins total,480.0,,20.0,10,annual_summary
+BV Pomo,2017,GH,O,Glenhaven,39.018,-122.855,Microcystins total,0.2,,0.0,6,annual_summary
+BV Pomo,2018,GH,O,Glenhaven,39.018,-122.855,Microcystins total,0.13,,0.0,10,annual_summary
+BV Pomo,2015,BP,L,Buckingham,38.9701,-122.6602,Microcystins total,9.4,,27.0,11,annual_summary
+BV Pomo,2016,BP,L,Buckingham,38.9701,-122.6602,Microcystins total,0.16,,0.0,9,annual_summary
+BV Pomo,2017,BP,L,Buckingham,38.9701,-122.6602,Microcystins total,1.3,,13.0,8,annual_summary
+BV Pomo,2018,BP,L,Buckingham,38.9701,-122.6602,Microcystins total,0.36,,0.0,11,annual_summary
+BV Pomo,2015,RP,L,Riviera Park,38.97,-122.655,Microcystins total,134.0,,33.0,10,annual_summary
+BV Pomo,2016,RP,L,Riviera Park,38.97,-122.655,Microcystins total,0.13,,0.0,9,annual_summary
+BV Pomo,2017,RP,L,Riviera Park,38.97,-122.655,Microcystins total,1.2,,13.0,8,annual_summary
+BV Pomo,2018,RP,L,Riviera Park,38.97,-122.655,Microcystins total,25.0,,17.0,6,annual_summary
+BV Pomo,2015,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Microcystins total,36.1,,40.0,10,annual_summary
+BV Pomo,2016,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Microcystins total,0.34,,0.0,9,annual_summary
+BV Pomo,2017,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Microcystins total,0.39,,0.0,8,annual_summary
+BV Pomo,2018,SHADY01,L,Cache Creek / Shady Acres,38.955,-122.62,Microcystins total,8.7,,27.0,11,annual_summary
+BV Pomo,2015,RED01,L,Redbud Park,38.9563,-122.6274,Microcystins total,65.5,,33.0,12,annual_summary
+BV Pomo,2016,RED01,L,Redbud Park,38.9563,-122.6274,Microcystins total,0.28,,0.0,9,annual_summary
+BV Pomo,2017,RED01,L,Redbud Park,38.9563,-122.6274,Microcystins total,0.44,,0.0,8,annual_summary
+BV Pomo,2018,RED01,L,Redbud Park,38.9563,-122.6274,Microcystins total,24.0,,20.0,10,annual_summary
+BV Pomo,2014,AP01,L,Austin Park,38.9572,-122.6419,Microcystins total,769.2,,100.0,9,annual_summary
+BV Pomo,2015,AP01,L,Austin Park,38.9572,-122.6419,Microcystins total,10162.0,,41.0,17,annual_summary
+BV Pomo,2016,AP01,L,Austin Park,38.9572,-122.6419,Microcystins total,0.21,,0.0,9,annual_summary
+BV Pomo,2017,AP01,L,Austin Park,38.9572,-122.6419,Microcystins total,5554.0,,0.0,9,annual_summary
+BV Pomo,2018,AP01,L,Austin Park,38.9572,-122.6419,Microcystins total,230.0,,9.0,11,annual_summary
+BV Pomo,2016,JB,L,Jago Bay,38.965,-122.67,Microcystins total,0.19,,0.0,9,annual_summary
+BV Pomo,2017,JB,L,Jago Bay,38.965,-122.67,Microcystins total,0.34,,0.0,8,annual_summary
