@@ -368,6 +368,22 @@ def get_recent_ci_trend(records, n=30):
         result.append({"date": r["date"], "ci_max": round(ci_val, 1)})
     return result
 
+# ── Location-based risk adjustment ────────────────────────────────────────────
+# Derived from BV Pomo tribal monitoring 2014–2024 (% sampling events above Caution):
+#   Lower Arm: 94%  Oaks Arm: 79%  Upper Arm: 31%
+# Normalised to lake-wide mean (68%) → multipliers applied to satellite CI.
+ARM_RISK_MULTIPLIER = {"U": 0.68, "L": 1.28, "O": 1.12}
+ARM_RISK_BASIS = {
+    "U": "31% of BV Pomo sampling events above Caution (2014–2024)",
+    "L": "94% of BV Pomo sampling events above Caution; highest absolute toxin levels",
+    "O": "79% of BV Pomo sampling events above Caution; elevated Danger-level events",
+}
+
+def location_adjusted_ci(ci_lakewide, arm):
+    """Scale lake-wide CI by arm-specific risk multiplier from tribal monitoring history."""
+    mult = ARM_RISK_MULTIPLIER.get(arm, 1.0)
+    return round(ci_lakewide * mult, 1)
+
 
 # ── Flask routes ──────────────────────────────────────────────────────────────
 
@@ -436,13 +452,16 @@ def api_status():
     # Confidence
     overall_conf = compute_overall_confidence(sat_score, obs_score, tribal_score, wx_score)
     ci_fc = ci_forecast if ci_forecast is not None else (sat_ci_max or 0)
-    tier_label, tier_color = risk_tier(ci_fc)
-    ci_band = ci_confidence_interval(ci_fc)
-    tiers_spanned = tier_from_interval(ci_band["ci_68_low"], ci_band["ci_68_high"])
-
     # Location context
     arm = infer_arm(lat, lon)
     nearest = nearest_bvpomo_sites(lat, lon)
+
+    # Apply arm-specific risk multiplier derived from BV Pomo historical data
+    ci_current_adj  = location_adjusted_ci(sat_ci_max or 0, arm)
+    ci_fc_adj       = location_adjusted_ci(ci_fc, arm)
+    tier_label, tier_color = risk_tier(ci_fc_adj)
+    ci_band = ci_confidence_interval(ci_fc_adj)
+    tiers_spanned = tier_from_interval(ci_band["ci_68_low"], ci_band["ci_68_high"])
 
     # Recent weather summary (last 7 valid days)
     wx_recent = [w for w in weather if w.get("tmp_avg_c") is not None][-7:]
@@ -466,12 +485,16 @@ def api_status():
             "nearest_sites": nearest,
         },
         "forecast": {
-            "ci_max_current":   round(sat_ci_max, 1) if sat_ci_max else 0,
-            "ci_max_7d":        round(ci_fc, 1),
-            "tier":             tier_label,
-            "tier_color":       tier_color,
-            "confidence_band":  ci_band,
-            "tiers_68pct_band": tiers_spanned,
+            "ci_max_current":        round(sat_ci_max, 1) if sat_ci_max else 0,
+            "ci_max_7d":             round(ci_fc, 1),
+            "ci_max_current_adj":    round(ci_current_adj, 1),
+            "ci_max_7d_adj":         round(ci_fc_adj, 1),
+            "arm_multiplier":        ARM_RISK_MULTIPLIER.get(arm, 1.0),
+            "arm_risk_basis":        ARM_RISK_BASIS.get(arm, ""),
+            "tier":                  tier_label,
+            "tier_color":            tier_color,
+            "confidence_band":       ci_band,
+            "tiers_68pct_band":      tiers_spanned,
         },
         "overall_confidence": overall_conf,
         "ci_trend": ci_trend,

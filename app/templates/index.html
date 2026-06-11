@@ -398,10 +398,15 @@ function renderRiskBanner(d) {
   document.getElementById("risk-label").style.color = fc.tier_color;
   document.getElementById("risk-label").classList.remove("skeleton");
 
-  const curr = fc.ci_max_current;
-  const fc7  = fc.ci_max_7d;
+  // Show location-adjusted CI (adjusted by arm multiplier from BV Pomo data)
+  const curr = fc.ci_max_current_adj ?? fc.ci_max_current;
+  const fc7  = fc.ci_max_7d_adj    ?? fc.ci_max_7d;
+  const mult = fc.arm_multiplier ?? 1.0;
+  const multLabel = mult !== 1.0
+    ? ` <span style="font-size:10px;opacity:.7">(×${mult.toFixed(2)} ${d.location.arm_name})</span>`
+    : "";
   document.getElementById("ci-value").innerHTML =
-    `Current: <b>${curr}</b> &nbsp;→&nbsp; 7-day forecast: <b>${fc7}</b>`;
+    `This location: <b>${curr}</b> &nbsp;→&nbsp; 7-day: <b>${fc7}</b>${multLabel}`;
 
   const MESSAGES = {
     "Low":       "No bloom signal detected. Standard precautions apply.",

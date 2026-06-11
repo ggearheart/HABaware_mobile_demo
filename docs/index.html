@@ -177,6 +177,18 @@ function riskTier(ci) {
   return {label:'Danger', color:'#b71c1c', msg: RISK_TIERS[4][4]};
 }
 
+// Arm-specific risk multipliers from BV Pomo 2014–2024 sampling history
+// (% events above Caution: Lower 94%, Oaks 79%, Upper 31%; normalised to lake mean 68%)
+const ARM_RISK_MULTIPLIER = {U: 0.68, L: 1.28, O: 1.12};
+const ARM_RISK_BASIS = {
+  U: '31% of BV Pomo events above Caution — relatively lower risk arm',
+  L: '94% of BV Pomo events above Caution — highest toxin levels on the lake',
+  O: '79% of BV Pomo events above Caution — elevated Danger-level events',
+};
+function locationAdjustedCI(ciLakewide, arm) {
+  return Math.round(ciLakewide * (ARM_RISK_MULTIPLIER[arm] || 1.0) * 10) / 10;
+}
+
 const BVPOMO_SITES = {
   AP01:    {name:'Austin Park',             arm:'L', lat:38.9572, lon:-122.6419},
   BP:      {name:'Buckingham',              arm:'L', lat:38.9701, lon:-122.6602},
@@ -428,9 +440,13 @@ function renderTrend(records) {
 }
 
 function renderAll(records, weather, swamp, bvpomo) {
+  const arm = inferArm(state.lat, state.lon);
   const ciCurrent = (() => { const v=records.filter(r=>r.max>BASELINE_CI); return v.length?v[v.length-1].max:0; })();
   const ciForecast = computeForecast(records);
-  const tier = riskTier(ciForecast);
+  const ciCurrentAdj = locationAdjustedCI(ciCurrent, arm);
+  const ciForecastAdj = locationAdjustedCI(ciForecast, arm);
+  const mult = ARM_RISK_MULTIPLIER[arm] || 1.0;
+  const tier = riskTier(ciForecastAdj);
 
   // Risk banner
   const banner = document.getElementById('risk-banner');
@@ -438,14 +454,16 @@ function renderAll(records, weather, swamp, bvpomo) {
   banner.style.borderLeft  = `4px solid ${tier.color}`;
   const rl = document.getElementById('risk-label');
   rl.textContent = tier.label.toUpperCase(); rl.style.color = tier.color; rl.classList.remove('skeleton');
-  document.getElementById('ci-value').innerHTML = `Current: <b>${Math.round(ciCurrent)}</b> &nbsp;→&nbsp; 7-day forecast: <b>${Math.round(ciForecast)}</b>`;
+  const armName = ARM_NAMES[arm] || arm;
+  const multLabel = mult !== 1.0 ? ` <span style="font-size:11px;color:var(--muted)">(×${mult.toFixed(2)} ${armName})</span>` : '';
+  document.getElementById('ci-value').innerHTML = `This location: <b>${Math.round(ciCurrentAdj)}</b> &nbsp;→&nbsp; 7-day: <b>${Math.round(ciForecastAdj)}</b>${multLabel}`;
   document.getElementById('risk-msg').textContent = tier.msg;
 
   // CI scale bar (log)
   const logScale = v => Math.min(100, Math.log1p(v)/Math.log1p(999)*100);
-  document.getElementById('ci-needle').style.left = logScale(ciForecast)+'%';
-  document.getElementById('ci-band').style.left  = logScale(Math.max(0,ciForecast-RMSE))+'%';
-  document.getElementById('ci-band').style.width = (logScale(ciForecast+RMSE)-logScale(Math.max(0,ciForecast-RMSE)))+'%';
+  document.getElementById('ci-needle').style.left = logScale(ciForecastAdj)+'%';
+  document.getElementById('ci-band').style.left  = logScale(Math.max(0,ciForecastAdj-RMSE))+'%';
+  document.getElementById('ci-band').style.width = (logScale(ciForecastAdj+RMSE)-logScale(Math.max(0,ciForecastAdj-RMSE)))+'%';
 
   // Data quality
   const satDQ     = scoreSatellite(records);
@@ -458,7 +476,7 @@ function renderAll(records, weather, swamp, bvpomo) {
   document.getElementById('conf-pct').textContent  = conf+'%';
 
   // Tier span for confidence note
-  const lo68 = Math.max(0, ciForecast-RMSE), hi68 = ciForecast+RMSE;
+  const lo68 = Math.max(0, ciForecastAdj-RMSE), hi68 = ciForecastAdj+RMSE;
   const spanned = RISK_TIERS.filter(([lo,hi])=>lo68<hi && hi68>=lo).map(t=>t[2]);
   let note = spanned.length===1 ? `68% CI stays within ${spanned[0]} tier.` : `68% CI spans ${spanned.join(' → ')} tiers.`;
   if (tribalDQ.pct<50) note += ' (tribal monitoring seasonal)';
@@ -489,8 +507,7 @@ function renderAll(records, weather, swamp, bvpomo) {
   }).join('') + `<div style="font-size:10px;color:var(--muted);margin-top:6px;">Site advisories from ${bvpomo.latest_sampling_date||'Oct 2024'} (end of monitoring season).</div>`;
 
   // Arm label
-  const arm = inferArm(state.lat, state.lon);
-  document.getElementById('arm-label').textContent = ARM_NAMES[arm] || arm;
+  document.getElementById('arm-label').textContent = armName;
   document.getElementById('header-badge').textContent = 'Updated ' + new Date().toLocaleTimeString();
 
   // Highlight nearest
