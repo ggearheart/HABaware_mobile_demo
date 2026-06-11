@@ -1,0 +1,230 @@
+date,bloom_report_id,case_id,advisory_level,advisory_rank,advisory_active,advisory_detail,bloom_size,bloom_texture,bloom_location,lat,lon,lab_data_linked,has_pictures,county
+2016-06-19,1421,37,None,0,1,,,,,39.0235,-122.77924,NO,No,Lake
+2017-05-19,1530,100,None,0,1,,,,,39.019445,-122.68681,NO,Yes,Lake
+2017-05-23,1533,100,None,0,1,,between a football field and a tennis court,,,39.0028,-122.7977,NO,Yes,Lake
+2017-06-05,1541,100,None,0,1,,smaller than a sedan,,,38.948856,-122.66023,NO,No,Lake
+2017-06-18,1563,100,None,0,0,,larger than a football field,,,38.948856,-122.66023,NO,No,Lake
+2017-06-18,1564,100,None,0,0,,between a football field and a tennis court,,,39.01929,-122.67514,NO,No,Lake
+2017-07-08,1588,100,Danger,4,1,,,,,38.9159888,-122.59472,NO,Yes,Lake
+2017-07-16,1566,100,None,0,1,,smaller than a sedan,,,38.94884,-122.68957,NO,No,Lake
+2017-08-11,1631,100,Warning,3,0,,larger than a football field,,,39.054491,-122.83721,NO,Yes,Lake
+2017-09-11,1688,100,None,0,1,,between a tennis court and a sedan,,,39.0250735,-122.65978,NO,No,Lake
+2018-01-23,1708,178,None,0,1,,,,,39.042359,-122.91287,NO,No,Lake
+2018-01-23,1709,178,None,0,1,,,,,39.026872,-122.88674,NO,No,Lake
+2018-01-23,1710,178,None,0,1,,,,,39.003128,-122.79816,NO,No,Lake
+2018-01-23,1711,178,None,0,1,,,,,39.000958,-122.75073,NO,No,Lake
+2018-01-23,1712,178,None,0,1,,,,,38.962911,-122.73113,NO,No,Lake
+2018-01-23,1713,178,None,0,1,,,,,38.925467,-122.61659,NO,No,Lake
+2018-01-23,1714,178,None,0,1,,,,,38.95983,-122.65027,NO,No,Lake
+2018-01-23,1715,178,None,0,1,,,,,39.0094,-122.67383,NO,No,Lake
+2018-01-23,1716,178,None,0,1,,,,,39.01929,-122.67514,NO,No,Lake
+2018-01-23,1717,178,None,0,1,,,,,39.026636,-122.7348,NO,No,Lake
+2018-01-23,1718,178,None,0,1,,,,,39.089696,-122.79611,NO,No,Lake
+2018-01-23,1719,178,None,0,1,,,,,39.0632,-122.86611,NO,No,Lake
+2018-01-23,1720,178,None,0,1,,,,,38.9643,-122.67888,NO,No,Lake
+2018-01-23,1721,178,None,0,1,,,,,39.0116,-122.69611,NO,No,Lake
+2018-04-18,1724,178,None,0,1,,smaller than a sedan,,,39.019445,-122.68681,NO,Yes,Lake
+2018-06-04,1759,178,None,0,1,,,,,39.011864,-122.76051,NO,No,Lake
+2018-06-04,1760,178,None,0,1,,,,,39.0287,-122.84863,NO,No,Lake
+2018-06-04,1761,178,None,0,1,,,,,39.063888,-122.91361,NO,No,Lake
+2018-06-04,1762,178,None,0,1,,,,,39.118142,-122.88643,NO,No,Lake
+2018-06-04,1763,178,None,0,1,,,,,39.121277,-122.85554,NO,No,Lake
+2018-06-04,1764,178,None,0,1,,,,,38.948472,-122.63778,NO,No,Lake
+2018-06-04,1765,178,None,0,1,,,,,38.99986,-122.6712,NO,No,Lake
+2019-01-23,1892,288,None,0,1,,,,,39.000958,-122.75073,NO,No,Lake
+2019-01-23,1893,288,None,0,1,,,,,39.003128,-122.79816,NO,No,Lake
+2019-01-23,1894,288,None,0,1,,,,,39.0287,-122.84863,NO,No,Lake
+2019-01-23,1895,288,None,0,1,,,,,39.026872,-122.88674,NO,No,Lake
+2019-01-23,1896,288,None,0,1,,,,,39.042359,-122.91287,NO,No,Lake
+2019-01-23,1897,288,None,0,1,,,,,39.121277,-122.85554,NO,No,Lake
+2019-01-23,1898,288,None,0,1,,,,,39.089696,-122.79611,NO,No,Lake
+2019-01-23,1899,288,None,0,1,,,,,39.01929,-122.67514,NO,No,Lake
+2019-01-23,1900,288,None,0,1,,,,,39.0094,-122.67383,NO,No,Lake
+2019-01-23,1901,288,None,0,1,,,,,38.95983,-122.65027,NO,No,Lake
+2019-01-23,1902,288,None,0,1,,,,,38.925467,-122.61659,NO,No,Lake
+2019-01-23,1903,288,None,0,1,,,,,39.0632,-122.86611,NO,No,Lake
+2019-01-23,1904,288,None,0,1,,,,,38.9643,-122.67888,NO,No,Lake
+2019-01-23,1905,288,None,0,1,,,,,39.0116,-122.69611,NO,No,Lake
+2019-01-23,1906,288,None,0,1,,,,,39.1149,-122.88277,NO,No,Lake
+2019-05-10,1907,288,None,0,1,,,,,38.99986,-122.6712,NO,No,Lake
+2019-05-10,1908,288,None,0,1,,,,,38.948472,-122.63778,NO,No,Lake
+2019-05-10,1909,288,None,0,1,,,,,39.118142,-122.88643,NO,No,Lake
+2019-05-10,1910,288,None,0,1,,,,,39.063888,-122.91361,NO,No,Lake
+2019-05-10,1911,288,None,0,1,,,,,39.011864,-122.76051,NO,No,Lake
+2019-05-10,1912,288,None,0,1,,,,,39.026636,-122.7348,NO,No,Lake
+2019-05-10,1913,288,None,0,0,,,,,38.962911,-122.73113,NO,No,Lake
+2019-06-09,1991,288,None,0,1,,,,,39.061,-122.817,NO,No,Lake
+2019-06-09,1992,288,None,0,1,,,,,39.061,-122.873,NO,No,Lake
+2019-06-09,1993,288,None,0,1,,,,,39.094,-122.847,NO,No,Lake
+2019-06-09,1994,288,None,0,1,,,,,39.028,-122.745,NO,No,Lake
+2019-06-09,1995,288,None,0,1,,,,,39.0127,-122.699,NO,No,Lake
+2019-06-09,1996,288,None,0,1,,,,,38.983,-122.717,NO,No,Lake
+2019-06-11,1990,288,None,0,1,,,,,39.024,-122.788,NO,No,Lake
+2019-07-08,2022,288,None,0,1,,,,,38.948856,-122.66023,NO,No,Lake
+2019-07-08,2023,288,None,0,1,,,,,39.0250735,-122.65978,NO,No,Lake
+2019-07-08,2024,288,None,0,1,,,,,39.0239133,-122.67175,NO,No,Lake
+2019-07-08,2025,288,None,0,1,,,,,39.0219353,-122.66717,NO,No,Lake
+2019-07-26,2042,288,None,0,1,,,,,38.981029,-122.68986,NO,No,Lake
+2019-08-30,2079,288,None,0,0,,larger than a football field,,,39.007502,-122.76275,NO,No,Lake
+2020-01-09,2143,429,,0,1,Testing results below posting triggers,,,,39.000958,-122.75073,NO,No,Lake
+2020-01-09,2144,429,,0,1,Advisory based on visual and toxins,,,,39.003128,-122.79816,NO,No,Lake
+2020-01-09,2145,429,,0,1,Advisory based on visual and toxins,,,,39.0287,-122.84863,NO,No,Lake
+2020-01-09,2146,429,,0,1,Advisory based on visual and toxins,,,,39.026872,-122.88674,NO,No,Lake
+2020-01-09,2147,429,,0,1,Advisory based on visual and toxins,,,,39.042359,-122.91287,NO,No,Lake
+2020-01-09,2148,429,,0,1,Advisory based on visual and toxins,,,,39.121277,-122.85554,NO,No,Lake
+2020-01-09,2149,429,,0,1,Testing results below posting triggers,,,,39.089696,-122.79611,NO,No,Lake
+2020-01-09,2150,429,,0,1,Advisory based on visual and toxins,,,,39.01929,-122.67514,NO,No,Lake
+2020-01-09,2151,429,,0,1,Advisory based on visual and toxins,,,,39.0094,-122.67383,NO,No,Lake
+2020-01-09,2152,429,,0,1,Advisory based on visual and toxins,,,,38.95983,-122.65027,NO,No,Lake
+2020-01-09,2153,429,,0,1,Advisory based on visual and toxins,,,,38.925467,-122.61659,NO,No,Lake
+2020-01-09,2154,429,,0,1,Advisory based on visual and toxins,,,,38.99986,-122.6712,NO,No,Lake
+2020-01-09,2155,429,,0,1,Advisory based on visual and toxins,,,,38.948472,-122.63778,NO,No,Lake
+2020-01-09,2156,429,,0,1,Advisory based on visual and toxins,,,,39.118142,-122.88643,NO,No,Lake
+2020-01-09,2157,429,,0,1,Advisory based on visual and toxins,,,,39.063888,-122.91361,NO,No,Lake
+2020-01-09,2158,429,,0,1,Advisory based on visual and toxins,,,,39.011864,-122.76051,NO,No,Lake
+2020-01-09,2159,429,,0,1,Advisory based on visual and toxins,,,,39.026636,-122.7348,NO,No,Lake
+2020-01-09,2160,429,,0,1,Advisory based on visual and toxins,,,,38.948856,-122.66023,NO,No,Lake
+2020-01-09,2161,429,,0,1,Testing results below posting triggers,,,,39.0250735,-122.65978,NO,No,Lake
+2020-01-09,2162,429,,0,1,Advisory based on visual and toxins,,,,39.0239133,-122.67175,NO,No,Lake
+2020-01-09,2163,429,,0,1,Testing results below posting triggers,,,,39.0219353,-122.66717,NO,No,Lake
+2020-01-09,2164,429,,0,1,Advisory based on visual and toxins,,,,38.981029,-122.68986,NO,No,Lake
+2020-01-09,2165,429,,0,1,Advisory based on visual and toxins,,,,39.0632,-122.86611,NO,No,Lake
+2020-01-09,2166,429,,0,1,Advisory based on visual and toxins,,,,38.9643,-122.67888,NO,No,Lake
+2020-01-09,2167,429,,0,1,Advisory based on visual and toxins,,,,39.0116,-122.69611,NO,Yes,Lake
+2020-01-09,2168,429,None,0,1,,,,,39.1149,-122.88277,NO,No,Lake
+2020-01-09,2169,429,None,0,0,,,,,39.024,-122.788,NO,No,Lake
+2020-01-09,2170,429,None,0,0,,,,,39.061,-122.817,NO,No,Lake
+2020-01-09,2171,429,None,0,0,,,,,39.061,-122.873,NO,No,Lake
+2020-01-09,2172,429,None,0,0,,,,,39.094,-122.847,NO,No,Lake
+2020-01-09,2173,429,,0,1,Testing results below posting triggers,,,,39.028,-122.745,NO,No,Lake
+2020-01-09,2174,429,,0,1,Advisory based on visual and toxins,,,,39.0127,-122.699,NO,No,Lake
+2020-01-09,2175,429,,0,1,Testing results below posting triggers,,,,38.983,-122.717,NO,No,Lake
+2020-06-04,2271,429,,0,0,,,,,39.067543,-122.91262,NO,Yes,Lake
+2020-06-08,2272,429,,0,0,,between a football field and a tennis court,,,39.025325,-122.74843,NO,No,Lake
+2020-06-25,2288,429,,0,1,visual monitoring based advisory,,,,39.020729,-122.66248,NO,No,Lake
+2020-07-11,2303,429,,0,1,Advisory based on visual and toxins,,,,38.939925,-122.63523,NO,Yes,Lake
+2020-07-14,2306,429,,0,1,Advisory based on visual and toxins,larger than a football field,,,38.97102,-122.66844,NO,Yes,Lake
+2020-07-14,2304,429,,0,0,,,,,38.969358,-122.65884,NO,No,Lake
+2020-08-18,2375,429,,0,0,,,,,38.932221,-122.63085,NO,No,Lake
+2021-01-14,2533,615,,0,1,Advisory based on visual and toxins,,,,38.95983,-122.65027,NO,No,Lake
+2021-01-14,2534,615,,0,1,Advisory based on visual and toxins,,,,39.000958,-122.75073,NO,No,Lake
+2021-01-14,2535,615,,0,1,Testing results below posting triggers,,,,39.026872,-122.88674,NO,No,Lake
+2021-01-14,2536,615,,0,1,Testing results below posting triggers,,,,38.9643,-122.67888,NO,No,Lake
+2021-01-14,2537,615,,0,1,Testing results below posting triggers,,,,39.0116,-122.69611,NO,No,Lake
+2021-01-14,2538,615,,0,1,Advisory based on visual and toxins,,,,39.01929,-122.67514,NO,No,Lake
+2021-01-14,2539,615,,0,1,Advisory based on visual and toxins,,,,39.003128,-122.79816,NO,No,Lake
+2021-01-14,2540,615,,0,1,Advisory based on visual and toxins,,,,39.0094,-122.67383,NO,No,Lake
+2021-01-14,2541,615,,0,1,Advisory based on visual and toxins,,,,39.0239133,-122.67175,NO,No,Lake
+2021-01-14,2542,615,,0,1,Advisory based on visual and toxins,,,,38.981029,-122.68986,NO,No,Lake
+2021-01-14,2543,615,,0,1,Advisory based on visual and toxins,,,,38.948472,-122.63778,NO,No,Lake
+2021-01-14,2544,615,,0,1,Advisory based on visual and toxins,,,,38.925467,-122.61659,NO,No,Lake
+2021-01-15,2566,615,,0,0,,,,,39.024,-122.788,NO,No,Lake
+2021-01-15,2567,615,,0,0,,,,,39.061,-122.817,NO,No,Lake
+2021-01-15,2568,615,,0,0,,,,,39.061,-122.873,NO,No,Lake
+2021-01-15,2569,615,,0,0,,,,,39.094,-122.847,NO,No,Lake
+2021-01-15,2549,615,,0,0,,,,,39.1149,-122.88277,NO,No,Lake
+2021-01-15,2550,615,,0,0,,,,,39.0287,-122.84863,NO,No,Lake
+2021-01-15,2551,615,,0,0,,,,,39.026636,-122.7348,NO,No,Lake
+2021-01-15,2552,615,,0,0,,,,,39.011864,-122.76051,NO,No,Lake
+2021-01-15,2553,615,,0,1,Advisory based on visual and toxins,,,,38.948856,-122.66023,NO,No,Lake
+2021-01-15,2554,615,,0,0,,,,,39.0250735,-122.65978,NO,No,Lake
+2021-01-15,2555,615,,0,1,Advisory based on visual and toxins,,,,39.121277,-122.85554,NO,No,Lake
+2021-01-15,2556,615,,0,0,,,,,38.983,-122.717,NO,No,Lake
+2021-01-15,2557,615,,0,1,Testing results below posting triggers,,,,39.042359,-122.91287,NO,No,Lake
+2021-01-15,2558,615,,0,0,,,,,39.063888,-122.91361,NO,No,Lake
+2021-01-15,2559,615,,0,1,Testing results below posting triggers,,,,39.089696,-122.79611,NO,No,Lake
+2021-01-15,2560,615,,0,0,,,,,39.028,-122.745,NO,No,Lake
+2021-01-15,2561,615,,0,0,,,,,39.0127,-122.699,NO,No,Lake
+2021-01-15,2562,615,,0,1,Advisory based on visual and toxins,,,,39.118142,-122.88643,NO,No,Lake
+2021-01-15,2563,615,,0,1,Advisory based on visual and toxins,,,,38.99986,-122.6712,NO,No,Lake
+2021-01-15,2564,615,,0,0,,,,,39.0219353,-122.66717,NO,No,Lake
+2021-05-12,2691,615,,0,1,Advisory based on visual and toxins,,,,38.978928,-122.69898,NO,No,Lake
+2021-06-26,2874,615,,0,0,,larger than a football field,,,39.0166716,-122.66551,NO,No,Lake
+2021-07-11,2866,615,,0,1,visual monitoring based advisory,larger than a football field,,,39.008584,-122.76369,NO,No,Lake
+2021-07-14,2867,615,,0,0,,larger than a football field,,,39.0201132,-122.68291,NO,No,Lake
+2021-07-15,2880,615,,0,0,,larger than a football field,,,39.020984,-122.67378,NO,Yes,Lake
+2021-07-20,2892,615,,0,0,,larger than a football field,,,39.003879,-122.7888,NO,No,Lake
+2021-08-11,3002,615,,0,1,Advisory based on visual and toxins,,,,39.06618,-122.86504,NO,No,Lake
+2021-09-01,3069,615,,0,0,,smaller than a sedan,,,39.0499323,-122.91228,NO,No,Lake
+2022-02-21,3233,859,,0,1,Updates from routine monitoring program-organization; Visual monitoring only-absent bloom,,,,39.089696,-122.79611,NO,No,Lake
+2022-02-21,3234,859,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,38.95983,-122.65027,NO,No,Lake
+2022-02-21,3236,859,,0,1,Updates from routine monitoring program-organization; visual monitoring based advisory,,,,39.000958,-122.75073,NO,No,Lake
+2022-02-21,3238,859,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,39.01929,-122.67514,NO,No,Lake
+2022-02-21,3239,859,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,39.0094,-122.67383,NO,No,Lake
+2022-02-21,3240,859,,0,1,Updates from routine monitoring program-organization; Visual monitoring only-absent bloom,,,,39.121277,-122.85554,NO,No,Lake
+2022-02-21,3241,859,,0,1,Updates from routine monitoring program-organization; Visual monitoring only-absent bloom,,,,39.042359,-122.91287,NO,No,Lake
+2022-02-21,3242,859,,0,1,Updates from routine monitoring program-organization; visual monitoring based advisory,,,,38.948472,-122.63778,NO,No,Lake
+2022-02-21,3243,859,,0,1,Updates from routine monitoring program-organization; Visual monitoring only-absent bloom,,,,39.0632,-122.86611,NO,No,Lake
+2022-02-21,3244,859,,0,1,Updates from routine monitoring program-organization,,,,39.094,-122.847,NO,No,Lake
+2022-02-21,3245,859,,0,1,Updates from routine monitoring program-organization,,,,39.061,-122.817,NO,No,Lake
+2022-02-21,3246,859,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization; visual monitoring based advisory,,,,39.0116,-122.69611,NO,No,Lake
+2022-02-21,3247,859,,0,1,Updates from routine monitoring program-organization,,,,39.028,-122.745,NO,No,Lake
+2022-02-21,3248,859,,0,1,Updates from routine monitoring program-organization,,,,39.024,-122.788,NO,No,Lake
+2022-02-21,3249,859,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,39.0127,-122.699,NO,No,Lake
+2022-02-21,3250,859,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,38.9643,-122.67888,NO,No,Lake
+2022-02-21,3251,859,,0,1,Updates from routine monitoring program-organization,,,,38.983,-122.717,NO,No,Lake
+2022-05-04,3295,859,,0,1,Advisory based on visual and toxins; Suspected illness reported; Updates from routine monitoring program-organization,,,,38.948856,-122.66023,NO,No,Lake
+2022-05-10,3316,859,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,38.925467,-122.61659,NO,No,Lake
+2022-05-10,3317,859,,0,1,Updates from routine monitoring program-organization; Visual monitoring only-absent bloom,,,,39.026636,-122.7348,NO,No,Lake
+2022-05-10,3318,859,,0,1,Updates from routine monitoring program-organization; visual monitoring based advisory,,,,39.011864,-122.76051,NO,No,Lake
+2022-05-10,3319,859,,0,1,Updates from routine monitoring program-organization; visual monitoring based advisory,,,,39.0287,-122.84863,NO,No,Lake
+2022-05-10,3320,859,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,39.0239133,-122.67175,NO,No,Lake
+2022-05-10,3321,859,,0,1,Suspected illness reported; Updates from routine monitoring program-organization,,,,39.003128,-122.79816,NO,No,Lake
+2022-05-10,3322,859,,0,1,Updates from routine monitoring program-organization; Visual monitoring only-absent bloom,,,,39.118142,-122.88643,NO,No,Lake
+2022-05-10,3323,859,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,38.99986,-122.6712,NO,No,Lake
+2022-05-18,3235,859,,0,1,Updates from routine monitoring program-organization; Visual monitoring only-absent bloom,,,,39.026872,-122.88674,NO,No,Lake
+2022-05-23,3395,859,,0,0,,,,,39.0104385,-122.77475,NO,No,Lake
+2022-05-24,3385,859,None,0,0,,,,,39.0884593,-122.79434,NO,No,Lake
+2022-06-06,3471,859,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,38.981029,-122.68986,NO,No,Lake
+2022-07-04,3515,859,,0,0,,smaller than a sedan,,,39.027586,-122.77447,NO,No,Lake
+2022-12-19,4041,1260,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,39.01929,-122.67514,YES,No,Lake
+2022-12-19,4042,1260,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,38.925467,-122.61659,NO,No,Lake
+2022-12-19,4043,1260,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,38.983,-122.717,NO,No,Lake
+2022-12-19,4045,1260,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,39.0127,-122.699,NO,No,Lake
+2022-12-19,4046,1260,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,39.042359,-122.91287,NO,No,Lake
+2022-12-19,4047,1260,,0,1,Advisory based on visual and toxins; Updates from routine monitoring program-organization,,,,38.948472,-122.63778,NO,No,Lake
+2023-02-24,4062,1260,,0,1,Updates from routine monitoring program-organization,,,,39.00958,-122.75073,NO,No,Lake
+2023-02-24,4063,1260,,0,1,Updates from routine monitoring program-organization,,,,39.0268,-122.8869,NO,No,Lake
+2023-02-24,4064,1260,,0,1,Updates from routine monitoring program-organization,,,,39.0094,-122.67383,NO,No,Lake
+2023-02-24,4065,1260,,0,1,Updates from routine monitoring program-organization,,,,38.948653,-122.66004,NO,No,Lake
+2023-02-24,4066,1260,,0,1,Updates from routine monitoring program-organization,,,,39.121278,-122.85554,NO,No,Lake
+2023-02-24,4067,1260,,0,1,Updates from routine monitoring program-organization,,,,39.118142,-122.88643,NO,No,Lake
+2023-05-15,4141,1260,,0,1,Updates from routine monitoring program-organization,,,,38.959853,-122.64988,NO,No,Lake
+2023-06-12,4158,1317,,0,0,Under investigation,,,,39.045194,-122.91276,NO,Yes,Lake
+2023-06-25,4177,1317,,0,0,Under investigation,between a tennis court and a sedan,Green discoloration; Spilled paint; Streaking; Surface scum,10-50 feet from shore,39.026192,-122.85365,NO,No,Lake
+2023-06-25,4181,1317,General awareness,1,0,Under investigation,between a tennis court and a sedan,Green discoloration; Streaking,<10 feet from shore,39.083716,-122.90423,NO,No,Lake
+2023-06-26,4184,1317,,0,0,,,,,38.965136,-122.65257,NO,No,Lake
+2023-06-26,4187,1317,None,0,0,,between a tennis court and a sedan,Green discoloration; Spilled paint; Streaking; Surface scum,shoreline to >50 feet from shore,38.99404,-122.7464,NO,No,Lake
+2023-06-27,4203,1317,None,0,0,,larger than a football field,Green discoloration; Surface scum,shoreline to >50 feet from shore,38.959599,-122.64991,NO,No,Lake
+2023-07-10,4398,1317,,0,0,,,,,39.121291,-122.85533,NO,No,Lake
+2023-07-17,4399,1317,,0,0,,,,,39.043131,-122.91303,NO,No,Lake
+2023-07-22,4288,1317,,0,0,,,,,38.979782,-122.73696,NO,No,Lake
+2023-07-26,4289,1317,Caution,2,0,,larger than a football field,Other,shoreline to >50 feet from shore,38.96921,-122.65255,NO,No,Lake
+2023-08-11,4334,1317,,0,0,,,,,39.017789,-122.81489,NO,No,Lake
+2023-09-10,4410,1317,,0,0,,,,,39.003642,-122.66645,NO,No,Lake
+2024-04-02,4443,1317,,0,1,Suspected illness reported,,,,39.043122,-122.91371,NO,No,Lake
+2024-04-29,4457,1317,,0,0,,,,,39.066199,-122.84582,NO,No,Lake
+2024-05-29,4517,1317,,0,0,,,,,38.92549,-122.6176,NO,No,Lake
+2024-06-07,4515,1317,,0,0,,,,,39.019351,-122.67467,NO,No,Lake
+2024-07-02,4545,1317,,0,1,Visual monitoring only-present bloom,between a tennis court and a sedan,,shoreline to >50 feet from shore,39.085997,-122.90221,NO,No,Lake
+2024-07-04,4564,1317,,0,1,Visual monitoring only-present bloom,between a football field and a tennis court,,10-50 feet from shore,39.000016,-122.69934,NO,No,Lake
+2024-07-04,4583,1317,None,0,0,,larger than a football field,Floating mats; Green discoloration; Surface scum,<10 feet from shore,38.930722,-122.62536,NO,No,Lake
+2024-07-07,4584,1317,None,0,0,,larger than a football field,Floating mats; Green discoloration; Surface scum; Visible spherical colonies,<10 feet from shore,38.961091,-122.65209,NO,No,Lake
+2024-07-08,4574,1317,,0,1,"Suspected bloom, investigation ongoing; Suspected illness reported",larger than a football field,Benthic mats; Floating mats,shoreline to >50 feet from shore,38.930877,-122.6269,NO,No,Lake
+2024-07-08,4569,1317,None,0,0,,larger than a football field,Floating mats; Green discoloration; Surface scum,shoreline to >50 feet from shore,39.020523,-122.66781,NO,No,Lake
+2024-07-10,4575,1317,Danger,4,0,,larger than a football field,Benthic mats; Floating mats,<10 feet from shore,39.0214597,-122.6623,NO,No,Lake
+2024-07-13,4622,1317,None,0,0,,no bloom,Other,no bloom,38.98136,-122.73528,NO,No,Lake
+2024-07-18,4615,1317,,0,0,,,,,39.07195,-122.91368,NO,No,Lake
+2024-07-30,4632,1317,,0,0,,larger than a football field,Green discoloration,shoreline to >50 feet from shore,39.03894,-122.91365,NO,No,Lake
+2024-08-02,4642,1317,None,0,0,,larger than a football field,Floating mats; Green discoloration; Streaking; Surface scum; Visible spherical colonies,shoreline to >50 feet from shore,39.018858,-122.66903,NO,No,Lake
+2024-08-02,4643,1317,None,0,0,,larger than a football field,Floating mats; Grass clippings; Green discoloration,<10 feet from shore,39.019753,-122.6698,NO,No,Lake
+2024-08-26,4677,1317,,0,0,,,,,39.03682,-122.9133,NO,No,Lake
+2024-10-13,4731,1317,None,0,0,,no bloom,,no bloom,39.01848,-122.81112,NO,No,Lake
+2025-06-10,4859,1317,,0,1,Suspected illness report closed,no bloom,Green discoloration,10-50 feet from shore,39.0110072,-122.77665,NO,No,Lake
+2025-06-14,4862,1317,,0,1,Suspected illness report closed,smaller than a sedan,Green discoloration; Spilled paint; Streaking,shoreline to >50 feet from shore,38.975761,-122.74123,NO,No,Lake
+2025-06-15,4864,1317,,0,1,Visual monitoring only-present bloom,,,,39.021693,-122.67152,NO,No,Lake
+2025-06-26,4875,1317,,0,1,Suspected illness reported,,Green discoloration,,39.017986,-122.66123,NO,No,Lake
+2025-07-24,4918,1317,,0,1,Under investigation,between a football field and a tennis court,Green discoloration; Other; Surface scum,shoreline to >50 feet from shore,38.967479,-122.71152,NO,No,Lake
+2025-07-31,4934,1317,,0,1,Suspected illness reported,larger than a football field,Floating mats,10-50 feet from shore,38.946382,-122.66766,NO,No,Lake
+2025-09-04,4997,1317,,0,0,Suspected illness reported,,,,38.94865,-122.66005,NO,No,Lake
+2025-09-07,4998,1317,,0,0,Suspected illness reported,,,,39.01056,-122.80624,NO,No,Lake

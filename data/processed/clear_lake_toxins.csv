@@ -1,0 +1,4 @@
+date,sample_id,bloom_report_id,analyte,value,unit,sample_location,lat,lon,method,data_type
+2022-08-23,1944,3235,Cylindrospermopsin,,,,,,ELISA,
+2022-08-23,1944,3235,Microcystins total,,,,,,ELISA,
+2022-08-23,1944,3235,Saxitoxin,,,,,,ELISA,

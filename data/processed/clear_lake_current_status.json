@@ -1,0 +1,52 @@
+{
+  "waterbody": "Clear Lake",
+  "wid": 33,
+  "data_as_of": "2026-06-02",
+  "open_case": {
+    "case_id": "859",
+    "year": "2022",
+    "status": "Ongoing"
+  },
+  "open_advisories": [
+    {
+      "start": "7/28/2016 12:00:00 AM",
+      "detail": "",
+      "type": "Advisory",
+      "case_id": "37"
+    },
+    {
+      "start": "5/19/2017 12:00:00 AM",
+      "detail": "",
+      "type": "Advisory",
+      "case_id": "100"
+    },
+    {
+      "start": "3/30/2018 12:00:00 AM",
+      "detail": "",
+      "type": "Advisory",
+      "case_id": "178"
+    },
+    {
+      "start": "2/5/2019 12:00:00 AM",
+      "detail": "",
+      "type": "Advisory",
+      "case_id": "288"
+    },
+    {
+      "start": "1/9/2020 12:00:00 AM",
+      "detail": "Testing results below posting triggers",
+      "type": "Advisory",
+      "case_id": "429"
+    }
+  ],
+  "latest_bloom_report": {
+    "date": "2025-09-07",
+    "advisory_level": "",
+    "bloom_size": "",
+    "bloom_texture": "",
+    "advisory_detail": "Suspected illness reported"
+  },
+  "latest_toxin_results": {},
+  "peak_advisory_last_30_reports": "Danger",
+  "total_clear_lake_bloom_reports": 229
+}

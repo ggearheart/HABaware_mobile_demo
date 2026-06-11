@@ -16,6 +16,9 @@ import urllib.request
 from datetime import date, timedelta
 from pathlib import Path
 
+SWAMP_STATUS_PATH = Path(__file__).parent.parent / "data/processed/clear_lake_current_status.json"
+SWAMP_OBS_PATH    = Path(__file__).parent.parent / "data/processed/clear_lake_observations.csv"
+
 FHAB_BASE   = "https://fhab-api.sfei.org"
 CLEAR_LAKE_WID = 33
 MODEL_PATH  = Path(__file__).parent.parent / "ml/model.pkl"
@@ -110,10 +113,29 @@ def risk_tier(ci_value):
     return "Danger", tiers[-1][3]
 
 
+# ── SWAMP observation data ────────────────────────────────────────────────────
+
+def load_swamp_status():
+    """Load the pre-processed SWAMP current status, or return empty dict if missing."""
+    if SWAMP_STATUS_PATH.exists():
+        with open(SWAMP_STATUS_PATH) as f:
+            return json.load(f)
+    return {}
+
+def load_recent_swamp_obs(n=10):
+    """Return the n most recent Clear Lake bloom report rows as dicts."""
+    import csv
+    if not SWAMP_OBS_PATH.exists():
+        return []
+    with open(SWAMP_OBS_PATH) as f:
+        rows = list(csv.DictReader(f))
+    return rows[-n:] if len(rows) >= n else rows
+
+
 # ── GenAI advisory via Claude ─────────────────────────────────────────────────
 
 def generate_advisory(lat, lon, visit_date, activity, ci_current, ci_forecast,
-                       tier_label, tier_msg, recent_records):
+                       tier_label, tier_msg, recent_records, swamp_status, swamp_obs):
     """Call Claude to generate a plain-language risk advisory."""
     try:
         import anthropic
@@ -134,10 +156,37 @@ def generate_advisory(lat, lon, visit_date, activity, ci_current, ci_forecast,
         for r in valid_recent[-7:]
     )
 
+    # Summarise SWAMP ground-truth data for the prompt
+    open_case    = swamp_status.get("open_case", {})
+    latest_obs   = swamp_status.get("latest_bloom_report", {})
+    open_advs    = swamp_status.get("open_advisories", [])
+    peak_adv     = swamp_status.get("peak_advisory_last_30_reports", "Unknown")
+    toxins       = swamp_status.get("latest_toxin_results", {})
+
+    swamp_block = f"""SWAMP FHAB ground-truth observation data (CA Water Boards, as of {swamp_status.get('data_as_of','unknown')}):
+- Open case: Case {open_case.get('case_id','?')} (since {open_case.get('year','?')}, status: {open_case.get('status','?')})
+- Latest field report: {latest_obs.get('date','?')} — "{latest_obs.get('advisory_detail','no detail')}" (size: {latest_obs.get('bloom_size','unknown') or 'not recorded'}, texture: {latest_obs.get('bloom_texture','unknown') or 'not recorded'})
+- Peak advisory level (last 30 reports): {peak_adv}
+- Open advisories: {len(open_advs)} on record with no end date"""
+
+    if toxins:
+        for analyte, data in toxins.items():
+            swamp_block += f"\n- Latest {analyte}: {data['value']} {data['unit']} (sampled {data['date']})"
+    else:
+        swamp_block += "\n- Toxin lab results: not available in current dataset"
+
+    # Recent field reports
+    obs_lines = "\n".join(
+        f"  {r['date']}: advisory={r['advisory_level'] or 'unspecified'}, "
+        f"size={r['bloom_size'] or 'not recorded'}, detail={r['advisory_detail'] or 'none'}"
+        for r in swamp_obs[-5:]
+    )
+
     system = """You are HABaware, a public health advisory assistant specializing in
 harmful algal bloom (HAB) risk at California waterbodies. You communicate risk clearly,
 accurately, and without either alarming or dismissing. You always ground your advice in
-the provided data. You never invent toxin measurements. Keep your advisory under 120 words."""
+the provided data. You never invent toxin measurements or advisory levels not given to you.
+Keep your advisory under 150 words."""
 
     user = f"""Generate a risk advisory for the following visit:
 
@@ -145,20 +194,25 @@ Location: Clear Lake, CA (lat={lat}, lon={lon})
 Planned visit: {visit_date}
 Activity: {activity} ({ACTIVITY_GUIDANCE.get(activity, activity)})
 
-Satellite data (SFEI FHAB cyanoindex, ci_modified):
+Satellite data (SFEI FHAB cyanoindex, ci_modified scale 0–999):
 - Current ci_max: {ci_current:.1f}
 - 7-day forecast ci_max: {ci_forecast:.1f}
 - Risk tier: {tier_label}
 - Tier message: {tier_msg}
 
-Recent 7-day trend:
+Recent 7-day satellite trend:
 {trend_lines}
 
-Write a short, plain-language advisory addressed to the visitor. Include:
-1. Overall risk level
-2. What the bloom data means practically for their activity
+{swamp_block}
+
+Recent field reports (most recent first):
+{obs_lines}
+
+Write a plain-language advisory addressed to the visitor. Include:
+1. Overall risk level (cite both satellite and field data)
+2. What this means practically for their specific activity
 3. One specific, actionable recommendation
-4. A note to check posted advisories at the lake."""
+4. Remind them to check posted signs at the lake and the CA Water Boards advisory page."""
 
     msg = client.messages.create(
         model="claude-sonnet-4-6",
@@ -194,10 +248,20 @@ def run_advisory(lat, lon, visit_date, activity="swimming"):
     tier_label, tier_msg = risk_tier(ci_forecast)
     print(f"  Risk tier: {tier_label}")
 
+    print("Loading SWAMP ground-truth data...")
+    swamp_status = load_swamp_status()
+    swamp_obs    = load_recent_swamp_obs(10)
+    if swamp_status:
+        print(f"  Open case: {swamp_status.get('open_case',{}).get('case_id','?')} "
+              f"({swamp_status.get('open_case',{}).get('status','?')})")
+        print(f"  Peak advisory (last 30 reports): {swamp_status.get('peak_advisory_last_30_reports','?')}")
+        print(f"  Latest field report: {swamp_status.get('latest_bloom_report',{}).get('date','?')}")
+
     print("Generating AI advisory...")
     advisory_text = generate_advisory(
         lat, lon, visit_date, activity,
-        ci_current, ci_forecast, tier_label, tier_msg, records
+        ci_current, ci_forecast, tier_label, tier_msg, records,
+        swamp_status, swamp_obs
     )
 
     result = {
@@ -212,6 +276,16 @@ def run_advisory(lat, lon, visit_date, activity="swimming"):
         "risk": {
             "tier":    tier_label,
             "message": tier_msg,
+        },
+        "swamp_ground_truth": {
+            "data_as_of":              swamp_status.get("data_as_of"),
+            "open_case_id":            swamp_status.get("open_case", {}).get("case_id"),
+            "open_case_status":        swamp_status.get("open_case", {}).get("status"),
+            "peak_advisory_30_reports": swamp_status.get("peak_advisory_last_30_reports"),
+            "latest_field_report_date": swamp_status.get("latest_bloom_report", {}).get("date"),
+            "latest_field_detail":     swamp_status.get("latest_bloom_report", {}).get("advisory_detail"),
+            "total_bloom_reports":     swamp_status.get("total_clear_lake_bloom_reports"),
+            "latest_toxins":           swamp_status.get("latest_toxin_results", {}),
         },
         "advisory": advisory_text,
     }
