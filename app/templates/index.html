@@ -101,7 +101,12 @@
     background: linear-gradient(to right, var(--low), var(--moderate), var(--high), var(--veryhigh), var(--danger));
   }
   .ci-needle { position: absolute; top: -3px; width: 2px; height: 12px; background: white; border-radius: 1px; transform: translateX(-50%); transition: left .4s; }
+  .ci-needle-lakewide { position: absolute; top: 0; width: 2px; height: 6px; background: rgba(255,255,255,.45); border-radius: 1px; transform: translateX(-50%); transition: left .4s; }
   .ci-band { position: absolute; top: 0; height: 6px; background: rgba(255,255,255,0.25); border-radius: 3px; transition: left .4s, width .4s; }
+  .ci-rows { display: flex; flex-direction: column; gap: 4px; margin-bottom: 4px; }
+  .ci-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; }
+  .ci-row-label { color: var(--muted); font-size: 11px; min-width: 90px; }
+  .ci-row-meta { font-size: 10px; color: var(--muted); margin-left: 6px; }
   .ci-bar-labels { display: flex; justify-content: space-between; font-size: 10px; opacity: .6; margin-top: 3px; }
 
   /* ── Confidence ─────────────────────────────────────────── */
@@ -215,13 +220,23 @@
     <div id="risk-banner" style="background: var(--surface2);">
       <div id="risk-row">
         <div id="risk-label" class="skeleton" style="width:130px;height:28px;">&nbsp;</div>
-        <div id="ci-value" style="color:var(--muted);">—</div>
       </div>
       <div class="risk-msg" id="risk-msg">—</div>
+      <div class="ci-rows">
+        <div class="ci-row">
+          <span class="ci-row-label">Lake-wide (SFEI)</span>
+          <span id="ci-lakewide" style="color:var(--muted);">—</span>
+        </div>
+        <div class="ci-row">
+          <span class="ci-row-label" id="ci-loc-label">This location</span>
+          <span id="ci-location" style="color:var(--muted);">—</span>
+        </div>
+      </div>
       <div class="ci-bar-wrap">
         <div class="ci-scale">
           <div class="ci-band" id="ci-band" style="left:0%;width:0%"></div>
           <div class="ci-needle" id="ci-needle" style="left:0%"></div>
+          <div class="ci-needle-lakewide" id="ci-needle-lw" style="left:0%"></div>
         </div>
         <div class="ci-bar-labels"><span>Low</span><span>Mod</span><span>High</span><span>V.High</span><span>Danger</span></div>
       </div>
@@ -398,15 +413,22 @@ function renderRiskBanner(d) {
   document.getElementById("risk-label").style.color = fc.tier_color;
   document.getElementById("risk-label").classList.remove("skeleton");
 
-  // Show location-adjusted CI (adjusted by arm multiplier from BV Pomo data)
-  const curr = fc.ci_max_current_adj ?? fc.ci_max_current;
-  const fc7  = fc.ci_max_7d_adj    ?? fc.ci_max_7d;
+  // Lake-wide (SFEI satellite) row
+  const lwCurr = fc.ci_max_current;
+  const lwFc7  = fc.ci_max_7d;
+  document.getElementById("ci-lakewide").innerHTML =
+    `Current: <b>${lwCurr}</b> &nbsp;→&nbsp; 7-day: <b>${lwFc7}</b>` +
+    `<span class="ci-row-meta">satellite ci_modified</span>`;
+
+  // Location-adjusted row
+  const curr = fc.ci_max_current_adj ?? lwCurr;
+  const fc7  = fc.ci_max_7d_adj      ?? lwFc7;
   const mult = fc.arm_multiplier ?? 1.0;
-  const multLabel = mult !== 1.0
-    ? ` <span style="font-size:10px;opacity:.7">(×${mult.toFixed(2)} ${d.location.arm_name})</span>`
-    : "";
-  document.getElementById("ci-value").innerHTML =
-    `This location: <b>${curr}</b> &nbsp;→&nbsp; 7-day: <b>${fc7}</b>${multLabel}`;
+  const armName = d.location.arm_name;
+  document.getElementById("ci-loc-label").textContent = armName;
+  document.getElementById("ci-location").innerHTML =
+    `Current: <b>${curr}</b> &nbsp;→&nbsp; 7-day: <b>${fc7}</b>` +
+    `<span class="ci-row-meta">×${mult.toFixed(2)} · BV Pomo historical</span>`;
 
   const MESSAGES = {
     "Low":       "No bloom signal detected. Standard precautions apply.",
@@ -426,6 +448,9 @@ function renderRiskBanner(d) {
   document.getElementById("ci-needle").style.left = needlePct + "%";
   document.getElementById("ci-band").style.left  = bandLow + "%";
   document.getElementById("ci-band").style.width = (bandHigh - bandLow) + "%";
+  // Lake-wide needle (dimmer)
+  const lwNeedle = Math.min(100, (Math.log1p(lwFc7) / Math.log1p(maxDomain)) * 100);
+  document.getElementById("ci-needle-lw").style.left = lwNeedle + "%";
 }
 
 function renderConfidence(d) {
