@@ -1,0 +1,51 @@
+{
+  "train_samples": 2922,
+  "test_samples": 365,
+  "test_rmse": 67.1263,
+  "test_mae": 38.3822,
+  "tier_accuracy": 0.5479,
+  "feature_importance": {
+    "ci_max": 2107452050.35,
+    "peak_7d": 392775932.43,
+    "ci_perc90": 54326285.88,
+    "cos_doy": 43813865.27,
+    "sin_doy": 24452608.4,
+    "mean_30d": 19380204.57,
+    "ci_mean": 14924232.36,
+    "peak_14d": 14818982.5,
+    "mean_7d": 11127678.24,
+    "peak_30d": 11049401.43,
+    "pixel_count": 10613904.18,
+    "mean_14d": 7951822.49,
+    "ci_median": 5766366.81,
+    "month": 1823952.34,
+    "has_signal": 0.0
+  },
+  "risk_tiers": [
+    {
+      "range": "0-5",
+      "label": "Low",
+      "message": "No bloom signal detected. Standard precautions apply."
+    },
+    {
+      "range": "5-30",
+      "label": "Moderate",
+      "message": "Low-level bloom signal present. Sensitive individuals should exercise caution."
+    },
+    {
+      "range": "30-80",
+      "label": "High",
+      "message": "Active bloom signal. Avoid water contact. Keep pets away."
+    },
+    {
+      "range": "80-200",
+      "label": "Very High",
+      "message": "Dense bloom present. Do not enter the water."
+    },
+    {
+      "range": "200-999",
+      "label": "Danger",
+      "message": "Severe bloom. Shoreline contact may be harmful. Follow posted advisories."
+    }
+  ]
+}
