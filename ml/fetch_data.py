@@ -1,5 +1,6 @@
 """
-Fetch and preprocess Clear Lake cyanoindex data from the SFEI FHAB API.
+Fetch and preprocess Clear Lake cyanoindex data from the SFEI FHAB API,
+joined with CIMIS weather features from Station #106 (Sanel Valley, 27km away).
 Produces a cleaned CSV ready for feature engineering and model training.
 """
 
@@ -9,8 +10,9 @@ import math
 from pathlib import Path
 from datetime import date, timedelta
 
-RAW_FILE = Path(__file__).parent.parent / "data/raw/clear_lake_cyanoindex_2017_2025.json"
-OUT_FILE = Path(__file__).parent.parent / "data/processed/clear_lake_features.csv"
+RAW_FILE    = Path(__file__).parent.parent / "data/raw/clear_lake_cyanoindex_2017_2025.json"
+WEATHER_CSV = Path(__file__).parent.parent / "data/processed/cimis_clear_lake_weather.csv"
+OUT_FILE    = Path(__file__).parent.parent / "data/processed/clear_lake_features.csv"
 
 BASELINE_CI = 0.9972436372799999  # value returned when no bloom signal present
 
@@ -82,12 +84,65 @@ def build_features(records):
 
     return rows
 
+def load_weather():
+    """Load CIMIS weather CSV into a dict keyed by date string. Returns {} if file missing."""
+    if not WEATHER_CSV.exists():
+        print(f"  Warning: CIMIS weather file not found ({WEATHER_CSV.name}). "
+              "Run ml/cimis_data.py with CIMIS_APP_KEY set to add weather features.")
+        return {}
+    weather = {}
+    with open(WEATHER_CSV) as f:
+        for row in csv.DictReader(f):
+            d = row.get("date", "")
+            if d:
+                weather[d] = row
+    print(f"  Loaded {len(weather)} CIMIS weather records from {WEATHER_CSV.name}")
+    return weather
+
+
+# Weather feature columns to join — only the pre-computed rolling versions
+# (raw daily values are already incorporated into 7d/14d rolling features)
+WEATHER_FEATURES = [
+    "tmp_avg_c",        "tmp_max_c",        "tmp_min_c",
+    "tmp_avg_7d",       "tmp_avg_14d",      "tmp_max_7d",
+    "wind_spd_avg_ms",  "wind_spd_7d",      "wind_spd_14d",
+    "wind_run_7d",
+    "sol_rad_avg_wm2",  "sol_rad_7d",       "sol_rad_14d",
+    "precip_mm",        "precip_7d",        "precip_14d",
+    "eto_mm",           "eto_7d",
+    "rh_avg_pct",       "rh_avg_7d",
+    "calm_days_7d",
+]
+
+
+def join_weather(rows, weather):
+    """Attach CIMIS features to each cyanoindex row, filling None if date missing."""
+    n_matched = 0
+    for row in rows:
+        w = weather.get(row["date"], {})
+        if w:
+            n_matched += 1
+        for col in WEATHER_FEATURES:
+            val = w.get(col)
+            try:
+                row[col] = float(val) if val not in (None, "", "None") else None
+            except (ValueError, TypeError):
+                row[col] = None
+    print(f"  Joined weather: {n_matched}/{len(rows)} dates matched")
+    return rows
+
+
 def main():
     records = load_raw()
-    print(f"Loaded {len(records)} raw records")
+    print(f"Loaded {len(records)} raw cyanoindex records")
     rows = build_features(records)
     valid = sum(1 for r in rows if r["has_signal"])
     print(f"Records with bloom signal: {valid} / {len(rows)}")
+
+    weather = load_weather()
+    rows = join_weather(rows, weather)
+    weather_coverage = sum(1 for r in rows if r.get("tmp_avg_c") is not None)
+    print(f"  Weather coverage: {weather_coverage}/{len(rows)} rows have temperature data")
 
     OUT_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(OUT_FILE, "w", newline="") as f:

@@ -10,8 +10,10 @@ Usage:
 import argparse
 import json
 import math
+import os
 import pickle
 import sys
+import urllib.parse
 import urllib.request
 from datetime import date, timedelta
 from pathlib import Path
@@ -20,6 +22,11 @@ SWAMP_STATUS_PATH  = Path(__file__).parent.parent / "data/processed/clear_lake_c
 SWAMP_OBS_PATH     = Path(__file__).parent.parent / "data/processed/clear_lake_observations.csv"
 BVPOMO_STATUS_PATH = Path(__file__).parent.parent / "data/processed/bvpomo_current_status.json"
 BVPOMO_PEAKS_PATH  = Path(__file__).parent.parent / "data/processed/bvpomo_annual_peaks.csv"
+CIMIS_WEATHER_CSV  = Path(__file__).parent.parent / "data/processed/cimis_clear_lake_weather.csv"
+
+CIMIS_STATION_ID   = 106
+CIMIS_BASE         = "https://et.water.ca.gov/api/data"
+CIMIS_DATA_ITEMS   = "day-air-tmp-avg,day-air-tmp-max,day-air-tmp-min,day-rel-hum-avg,day-sol-rad-avg,day-wind-spd-avg,day-wind-run,day-precip,day-eto"
 
 FHAB_BASE   = "https://fhab-api.sfei.org"
 CLEAR_LAKE_WID = 33
@@ -133,6 +140,59 @@ def load_recent_swamp_obs(n=10):
         rows = list(csv.DictReader(f))
     return rows[-n:] if len(rows) >= n else rows
 
+def fetch_recent_cimis(days=14):
+    """Fetch the last `days` of CIMIS weather from Station 106. Returns list of day dicts."""
+    app_key = os.environ.get("CIMIS_APP_KEY", "").strip()
+    if not app_key:
+        return []
+    end   = date.today()
+    start = end - timedelta(days=days)
+    params = urllib.parse.urlencode({
+        "appKey":        app_key,
+        "targets":       str(CIMIS_STATION_ID),
+        "startDate":     start.isoformat(),
+        "endDate":       end.isoformat(),
+        "dataItems":     CIMIS_DATA_ITEMS,
+        "unitOfMeasure": "M",
+    })
+    try:
+        req = urllib.request.Request(
+            f"{CIMIS_BASE}?{params}",
+            headers={"Accept": "application/json", "User-Agent": "HABaware/1.0"},
+        )
+        with urllib.request.urlopen(req, timeout=15) as r:
+            raw = json.loads(r.read())
+    except Exception as e:
+        print(f"  CIMIS API fetch failed: {e}")
+        return []
+
+    item_map = {
+        "day-air-tmp-avg":  "tmp_avg_c",
+        "day-air-tmp-max":  "tmp_max_c",
+        "day-air-tmp-min":  "tmp_min_c",
+        "day-rel-hum-avg":  "rh_avg_pct",
+        "day-sol-rad-avg":  "sol_rad_avg_wm2",
+        "day-wind-spd-avg": "wind_spd_avg_ms",
+        "day-wind-run":     "wind_run_km",
+        "day-precip":       "precip_mm",
+        "day-eto":          "eto_mm",
+    }
+    days_out = []
+    for provider in raw.get("Data", {}).get("Providers", []):
+        for record in provider.get("Records", []):
+            day = {"date": record.get("Date", "")[:10]}
+            for item in record.get("DayData", []):
+                key = item_map.get(item.get("Item", ""))
+                val = item.get("Value")
+                if key:
+                    try:
+                        day[key] = float(val) if val not in (None, "", " ") else None
+                    except (ValueError, TypeError):
+                        day[key] = None
+            days_out.append(day)
+    return days_out
+
+
 def load_bvpomo_status():
     """Load BV Pomo current status and recent annual peaks."""
     import csv
@@ -151,7 +211,7 @@ def load_bvpomo_status():
 
 def generate_advisory(lat, lon, visit_date, activity, ci_current, ci_forecast,
                        tier_label, tier_msg, recent_records, swamp_status, swamp_obs,
-                       bvpomo_status, bvpomo_peaks):
+                       bvpomo_status, bvpomo_peaks, cimis_weather):
     """Call Claude to generate a plain-language risk advisory."""
     try:
         import anthropic
@@ -224,6 +284,24 @@ Tribal monitoring data — Big Valley Band of Pomo Indians (source: bvrancheria.
             bvpomo_block += "\n- Recent annual lake-wide peaks (µg/L microcystin): " + \
                 ", ".join(f"{p['year']}:{p['peak_ug_L']}" for p in recent_peaks)
 
+    # CIMIS weather block
+    cimis_block = ""
+    if cimis_weather:
+        recent_w = [w for w in cimis_weather if w.get("tmp_avg_c") is not None][-7:]
+        if recent_w:
+            tmp_vals  = [w["tmp_avg_c"]       for w in recent_w if w.get("tmp_avg_c") is not None]
+            wind_vals = [w["wind_spd_avg_ms"]  for w in recent_w if w.get("wind_spd_avg_ms") is not None]
+            rad_vals  = [w["sol_rad_avg_wm2"]  for w in recent_w if w.get("sol_rad_avg_wm2") is not None]
+            prcp_vals = [w["precip_mm"]        for w in recent_w if w.get("precip_mm") is not None]
+            calm_days = sum(1 for w in recent_w if w.get("wind_spd_avg_ms") is not None and w["wind_spd_avg_ms"] < 2.0)
+
+            avg = lambda v: round(sum(v)/len(v), 1) if v else None
+            cimis_block = f"""
+CIMIS weather — Station #106 Sanel Valley (27km from Clear Lake), last 7 days:
+- Avg air temp: {avg(tmp_vals)} °C  |  Avg wind speed: {avg(wind_vals)} m/s  |  Calm days (<2 m/s): {calm_days}/7
+- Avg solar radiation: {avg(rad_vals)} W/m²  |  Total precip: {round(sum(prcp_vals),1) if prcp_vals else 'N/A'} mm
+- Calm, warm, sunny conditions favor surface bloom accumulation."""
+
     system = """You are HABaware, a public health advisory assistant specializing in
 harmful algal bloom (HAB) risk at California waterbodies. You communicate risk clearly,
 accurately, and without either alarming or dismissing. You always ground your advice in
@@ -247,6 +325,7 @@ Recent 7-day satellite trend:
 
 {swamp_block}
 {bvpomo_block}
+{cimis_block}
 
 Recent SWAMP field reports (most recent first):
 {obs_lines}
@@ -295,6 +374,14 @@ def run_advisory(lat, lon, visit_date, activity="swimming"):
     swamp_status = load_swamp_status()
     swamp_obs    = load_recent_swamp_obs(10)
 
+    print("Fetching CIMIS weather (Station #106, last 14 days)...")
+    cimis_weather = fetch_recent_cimis(days=14)
+    if cimis_weather:
+        valid_w = [w for w in cimis_weather if w.get("tmp_avg_c") is not None]
+        print(f"  Retrieved {len(valid_w)} days with temperature data")
+    else:
+        print("  CIMIS_APP_KEY not set — weather data skipped (set key to enable)")
+
     print("Loading BV Pomo tribal monitoring data...")
     bvpomo_status, bvpomo_peaks = load_bvpomo_status()
     if bvpomo_status:
@@ -311,7 +398,7 @@ def run_advisory(lat, lon, visit_date, activity="swimming"):
     advisory_text = generate_advisory(
         lat, lon, visit_date, activity,
         ci_current, ci_forecast, tier_label, tier_msg, records,
-        swamp_status, swamp_obs, bvpomo_status, bvpomo_peaks
+        swamp_status, swamp_obs, bvpomo_status, bvpomo_peaks, cimis_weather
     )
 
     result = {
@@ -326,6 +413,19 @@ def run_advisory(lat, lon, visit_date, activity="swimming"):
         "risk": {
             "tier":    tier_label,
             "message": tier_msg,
+        },
+        "cimis_weather": {
+            "station":        "106 Sanel Valley (27km from Clear Lake)",
+            "days_retrieved": len([w for w in cimis_weather if w.get("tmp_avg_c") is not None]),
+            "source":         "CIMIS — CA Dept of Water Resources",
+            "note":           "Set CIMIS_APP_KEY env var to enable live weather data",
+        } if not cimis_weather else {
+            "station":        "106 Sanel Valley (27km from Clear Lake)",
+            "days_retrieved": len([w for w in cimis_weather if w.get("tmp_avg_c") is not None]),
+            "latest_date":    max((w["date"] for w in cimis_weather if w.get("date")), default=None),
+            "latest_tmp_avg_c": next((w["tmp_avg_c"] for w in reversed(cimis_weather) if w.get("tmp_avg_c") is not None), None),
+            "latest_wind_spd_ms": next((w["wind_spd_avg_ms"] for w in reversed(cimis_weather) if w.get("wind_spd_avg_ms") is not None), None),
+            "source":         "CIMIS — CA Dept of Water Resources",
         },
         "bvpomo_tribal_monitoring": {
             "source":                    "Big Valley Band of Pomo Indians",
