@@ -160,6 +160,25 @@
       <div id="sites-list"></div>
     </div>
 
+    <!-- BV Pomo Current Results -->
+    <div id="bvpomo-section" style="padding:0 12px 4px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;" onclick="toggleBvPomo()">
+        <div class="section-title" style="margin-bottom:0;">BV Pomo Current Monitoring Results</div>
+        <span id="bvpomo-toggle-icon" style="font-size:12px;color:var(--muted);">▼ Show</span>
+      </div>
+      <div id="bvpomo-embed" style="display:none;margin-top:8px;">
+        <iframe
+          src="https://www.bvrancheria.com/current-monitoring-results"
+          style="width:100%;height:480px;border:1px solid var(--border);border-radius:8px;background:white;"
+          loading="lazy"
+          title="BV Pomo Current Monitoring Results">
+        </iframe>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;text-align:right;">
+          Source: <a href="https://www.bvrancheria.com/current-monitoring-results" target="_blank" style="color:var(--accent);">bvrancheria.com</a>
+        </div>
+      </div>
+    </div>
+
     <div id="data-note">
       Data: <a href="https://fhab-api.sfei.org" target="_blank">SFEI FHAB</a> satellite cyanoindex ·
       <a href="https://data.ca.gov/dataset/surface-water-freshwater-harmful-algal-blooms" target="_blank">CA SWAMP</a> field observations ·
@@ -546,6 +565,14 @@ function renderAll(records, weather, swamp, bvpomo) {
 }
 
 // ── Update location ────────────────────────────────────────────────────────────
+function toggleBvPomo() {
+  const el = document.getElementById('bvpomo-embed');
+  const icon = document.getElementById('bvpomo-toggle-icon');
+  const open = el.style.display === 'none';
+  el.style.display = open ? 'block' : 'none';
+  icon.textContent = open ? '▲ Hide' : '▼ Show';
+}
+
 function updateLocation(lat, lon) {
   state.lat = lat; state.lon = lon;
   document.getElementById('coord-label').textContent = `${lat.toFixed(4)}°N, ${Math.abs(lon).toFixed(4)}°W`;
