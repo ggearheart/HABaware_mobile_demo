@@ -108,7 +108,18 @@ def risk_tier(ci):
 def fetch_json(url):
     req = urllib.request.Request(url, headers={"User-Agent": "HABaware/1.0"})
     with urllib.request.urlopen(req, timeout=12) as r:
-        return json.loads(r.read())
+        body = r.read()
+    if body[:9].lower().startswith(b"<!doctype") or body[:5] == b"<html":
+        raise ValueError("SFEI API returned HTML (Cloudflare WAF block)")
+    return json.loads(body)
+
+
+def load_historical_cyanoindex():
+    """Load records from local historical JSON when SFEI API is blocked."""
+    if CI_RAW_PATH.exists():
+        with open(CI_RAW_PATH) as f:
+            return json.load(f)
+    return []
 
 def get_recent_cyanoindex(days=45):
     end   = date.today()
@@ -423,16 +434,20 @@ def api_status():
         ci_forecast, _ = run_forecast(records)
         ci_trend = get_recent_ci_trend(records, n=30)
     except Exception as e:
-        # Try falling back to any previously cached value before giving up
+        # Fall back to cached value, then local historical file
         entry = _cache.get("cyanoindex")
         if entry:
             records = entry["data"]
-            sat_score, sat_detail, sat_date, sat_ci_max = score_satellite(records)
-            ci_forecast, _ = run_forecast(records)
-            ci_trend = get_recent_ci_trend(records, n=30)
-            sat_detail = "(cached) " + sat_detail
+            sat_detail = "(cached) " + score_satellite(records)[1]
         else:
-            return jsonify({"error": f"FHAB API unavailable and no cache: {e}"}), 503
+            records = load_historical_cyanoindex()
+            if not records:
+                return jsonify({"error": f"FHAB API unavailable and no local data: {e}"}), 503
+            sat_detail = "(historical) SFEI API blocked — using 2017-2025 archive"
+            _cache["cyanoindex"] = {"data": records, "ts": time.time() - CACHE_TTL_SECONDS + 60}
+        sat_score, _, sat_date, sat_ci_max = score_satellite(records)
+        ci_forecast, _ = run_forecast(records)
+        ci_trend = get_recent_ci_trend(records, n=30)
 
     # SWAMP
     obs_score, obs_detail, obs_date = score_swamp()
