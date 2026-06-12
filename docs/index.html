@@ -620,9 +620,10 @@ function renderAll(records, weather, swamp, bvpomo) {
 
 // ── Update location ────────────────────────────────────────────────────────────
 // ── CI Raster overlay ──────────────────────────────────────────────────────────
-let _ciLayer = null, _ciLayerDate = null, _ciLayerOn = false;
+let _ciLayer = null, _ciLayerDate = null, _ciLayerOn = false, _ciLoadToken = 0;
 
 async function loadCIRaster(dateStr) {
+  const token = ++_ciLoadToken;           // invalidate any in-flight older request
   const label = document.getElementById('ci-layer-label');
   label.textContent = 'Loading…';
   const url = `https://fhab-api.sfei.org/cyano/10daymax/${dateStr}/33/tif`;
@@ -630,7 +631,8 @@ async function loadCIRaster(dateStr) {
     const resp = await fetch(url);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const buf = await resp.arrayBuffer();
-    const tiff = await GeoTIFF.fromArrayBuffer(buf);
+    if (token !== _ciLoadToken) return;   // a newer request superseded this one
+    const tiff = await GeoTIFF.fromArrayBuffer(buf.slice(0));
     const img  = await tiff.getImage();
     const cm   = img.getFileDirectory().ColorMap;
     const colorLookup = new Array(256).fill(null);
@@ -644,6 +646,8 @@ async function loadCIRaster(dateStr) {
       }
     }
     const georaster = await parseGeoraster(buf);
+    if (token !== _ciLoadToken) return;   // check again after second async op
+    if (_ciLayer) map.removeLayer(_ciLayer);
     _ciLayer = new GeoRasterLayer({
       georaster, opacity: 1,
       pixelValuesToColorFn: values => colorLookup[Math.round(values[0])] || null,

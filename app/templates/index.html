@@ -401,8 +401,10 @@ map.on("click", e => {
 let _ciLayer = null;
 let _ciLayerDate = null;
 let _ciLayerOn = false;
+let _ciLoadToken = 0;
 
 async function loadCIRaster(dateStr) {
+  const token = ++_ciLoadToken;           // invalidate any in-flight older request
   const label = document.getElementById('ci-layer-label');
   label.textContent = 'Loading…';
   const url = `https://fhab-api.sfei.org/cyano/10daymax/${dateStr}/33/tif`;
@@ -410,23 +412,26 @@ async function loadCIRaster(dateStr) {
     const resp = await fetch(url, {headers:{'User-Agent':'HABaware/1.0'}});
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const buf = await resp.arrayBuffer();
+    if (token !== _ciLoadToken) return;   // superseded by newer request
 
     // Extract SFEI color table from GeoTiff header
-    const tiff = await GeoTIFF.fromArrayBuffer(buf);
+    const tiff = await GeoTIFF.fromArrayBuffer(buf.slice(0));
     const img  = await tiff.getImage();
-    const cm   = img.getFileDirectory().ColorMap; // R[256]+G[256]+B[256], 16-bit each
+    const cm   = img.getFileDirectory().ColorMap;
     const colorLookup = new Array(256).fill(null);
     if (cm) {
       for (let i = 1; i < 255; i++) {
         const r = Math.round(cm[i]       / 65535 * 255);
         const g = Math.round(cm[256 + i] / 65535 * 255);
         const b = Math.round(cm[512 + i] / 65535 * 255);
-        if (r < 5 && g < 5 && b < 5) continue; // near-black = nodata
+        if (r < 5 && g < 5 && b < 5) continue;
         colorLookup[i] = `rgba(${r},${g},${b},0.82)`;
       }
     }
 
     const georaster = await parseGeoraster(buf);
+    if (token !== _ciLoadToken) return;   // check again after second async op
+    if (_ciLayer) map.removeLayer(_ciLayer);
     _ciLayer = new GeoRasterLayer({
       georaster,
       opacity: 1,
