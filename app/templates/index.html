@@ -293,13 +293,13 @@
 
     <!-- Date slicer -->
     <div id="date-slicer">
-      <div class="section-title">Date Range</div>
+      <div class="section-title">View Date</div>
       <div class="slicer-row">
-        <input type="range" class="slicer-range" id="date-range" min="14" max="180" value="45" step="1">
-        <span class="slicer-label" id="date-range-label">Last 45 days</span>
+        <input type="range" class="slicer-range" id="date-range" min="0" max="180" value="0" step="1">
+        <span class="slicer-label" id="date-range-label">Today</span>
       </div>
       <div class="slicer-ticks">
-        <span>6 mo</span><span>3 mo</span><span>1 mo</span><span>2 wk</span>
+        <span>Today</span><span>−2 mo</span><span>−4 mo</span><span>−6 mo</span>
       </div>
     </div>
 
@@ -663,51 +663,32 @@ function renderDQCards(dq) {
 }
 
 let trendChart = null;
-function renderTrend(trend) {
+function renderTrendWithCutoff(trend, cutoffDate) {
   if (!trend || !trend.length) return;
-  const labels = trend.map(t => t.date.slice(5)); // MM-DD
+  const labels = trend.map(t => t.date.slice(5));
   const values = trend.map(t => t.ci_max);
-
-  // Color each bar by tier
-  const bgColors = values.map(v => {
-    if (v >= 200) return "#b71c1c88";
-    if (v >= 80)  return "#e64a1988";
-    if (v >= 30)  return "#f57f1788";
-    if (v >= 5)   return "#558b2f88";
-    return "#2e7d3288";
+  const bgColors = trend.map((t, i) => {
+    const v = values[i];
+    const base = v>=200?'#b71c1c':v>=80?'#e64a19':v>=30?'#f57f17':v>=5?'#558b2f':'#2e7d32';
+    if (t.date === cutoffDate || (t.date <= cutoffDate && (!trend[i+1] || trend[i+1].date > cutoffDate)))
+      return base + 'ff';
+    return base + (t.date <= cutoffDate ? '99' : '33');
   });
-  const borderColors = bgColors.map(c => c.slice(0, 7));
-
   const ctx = document.getElementById("trendChart").getContext("2d");
   if (trendChart) trendChart.destroy();
   trendChart = new Chart(ctx, {
     type: "bar",
-    data: {
-      labels,
-      datasets: [{
-        data: values,
-        backgroundColor: bgColors,
-        borderColor: borderColors,
-        borderWidth: 1,
-        borderRadius: 2,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: {
-        callbacks: {
-          label: ctx => ` ci_max: ${ctx.parsed.y.toFixed(0)}`,
-          title: items => items[0].label,
-        }
-      }},
-      scales: {
-        x: { ticks: { color: "#7b82a0", font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 },
-             grid: { color: "#2e3350" }},
-        y: { ticks: { color: "#7b82a0", font: { size: 9 } }, grid: { color: "#2e3350" }, min: 0 },
-      }
+    data: { labels, datasets: [{ data: values, backgroundColor: bgColors, borderColor: bgColors.map(c=>c.slice(0,7)), borderWidth: 1, borderRadius: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ci_max: ${c.parsed.y}` } } },
+      scales: { x: { ticks: { color: '#7b82a0', font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 }, grid: { color: '#2e3350' } },
+                y: { ticks: { color: '#7b82a0', font: { size: 9 } }, grid: { color: '#2e3350' }, min: 0 } }
     }
   });
+}
+
+function renderTrend(trend) {
+  renderTrendWithCutoff(trend, _todayStr());
 }
 
 const ADV_COLORS = { DANGER: "#b71c1c", WARNING: "#e64a19", CAUTION: "#f57f17", NONE: "#546e7a" };
@@ -810,39 +791,53 @@ window.renderAll = d => {
 };
 
 // ── Date slicer ────────────────────────────────────────────────────────────────
-function slicerLabel(days) {
-  if (days >= 168) return 'Last 6 months';
-  if (days >= 84)  return 'Last 3 months';
-  if (days >= 28)  return `Last ${Math.round(days/30)} month${Math.round(days/30)>1?'s':''}`;
-  if (days >= 14)  return `Last ${Math.round(days/7)} weeks`;
-  return `Last ${days} days`;
-}
+const _fmtDate = d => (d instanceof Date ? d : new Date(d)).toISOString().slice(0,10);
+const _todayStr = () => _fmtDate(new Date());
 
-async function fetchSFEITrend(days) {
-  const end = new Date(); const start = new Date(end - days*864e5);
-  const fmt = d => d.toISOString().slice(0,10);
-  const url = `https://fhab-api.sfei.org/cyano/10daymax/33/${fmt(start)}/${fmt(end)}/ci_modified/json`;
+async function fetchSFEIWindow(endDate, windowDays = 45) {
+  const end = new Date(endDate); const start = new Date(+end - windowDays*864e5);
+  const url = `https://fhab-api.sfei.org/cyano/10daymax/33/${_fmtDate(start)}/${_fmtDate(end)}/ci_modified/json`;
   const r = await fetch(url);
   const raw = await r.json();
-  // raw is array of {date, max, pixel_count, ...} or similar
   if (!Array.isArray(raw)) return [];
-  return raw.map(d => ({ date: d.date, ci_max: d.max ?? d.ci_max ?? 0 }));
+  return raw.map(d => ({ date: d.date, ci_max: d.max ?? d.ci_max ?? 0, max: d.max ?? d.ci_max ?? 0, pixel_count: d.pixel_count ?? 1 }));
 }
 
 (function initSlicer() {
-  const el = document.getElementById('date-range');
+  const el  = document.getElementById('date-range');
   const lbl = document.getElementById('date-range-label');
+
+  function daysAgoToDate(daysBack) {
+    const d = new Date(); d.setDate(d.getDate() - daysBack);
+    return _fmtDate(d);
+  }
+
+  function updateLabel(daysBack) {
+    const dateStr = daysAgoToDate(daysBack);
+    lbl.textContent = daysBack === 0 ? `Today (${dateStr})` : dateStr;
+  }
+
+  updateLabel(0);
+
   let _debounce;
   el.addEventListener('input', () => {
-    const days = parseInt(el.value);
-    lbl.textContent = slicerLabel(days);
+    const daysBack = parseInt(el.value);
+    updateLabel(daysBack);
     clearTimeout(_debounce);
     _debounce = setTimeout(async () => {
+      const dateStr = daysAgoToDate(daysBack);
       try {
-        const trend = await fetchSFEITrend(days);
-        if (trend.length) renderTrend(trend);
+        const trend = await fetchSFEIWindow(dateStr, 45);
+        if (trend.length) {
+          // Mark selected date on chart — re-render with cutoff context
+          renderTrendWithCutoff(trend, dateStr);
+          // Overlay raster for that date
+          if (_ciLayer) { map.removeLayer(_ciLayer); _ciLayer = null; }
+          _ciLayerOn = true;
+          loadCIRaster(dateStr);
+        }
       } catch(e) { console.warn('Slicer fetch failed:', e); }
-    }, 400);
+    }, 350);
   });
 })();
 

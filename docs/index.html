@@ -171,13 +171,13 @@
     </div>
 
     <div id="date-slicer">
-      <div class="section-title">Date Range</div>
+      <div class="section-title">View Date</div>
       <div class="slicer-row">
-        <input type="range" class="slicer-range" id="date-range" min="0" max="180" value="45" step="1">
-        <span class="slicer-label" id="date-range-label">Last 45 days</span>
+        <input type="range" class="slicer-range" id="date-range" min="0" max="180" value="0" step="1">
+        <span class="slicer-label" id="date-range-label">Today</span>
       </div>
       <div class="slicer-ticks">
-        <span>6 mo</span><span>3 mo</span><span>1 mo</span><span>2 wk</span>
+        <span>Today</span><span>−2 mo</span><span>−4 mo</span><span>−6 mo</span>
       </div>
     </div>
 
@@ -290,7 +290,9 @@ const ARM_NAMES = {U:'Upper Arm', L:'Lower Arm', O:'Oaks Arm'};
 const ADV_COLORS = {DANGER:'#b71c1c', WARNING:'#e64a19', CAUTION:'#f57f17', NONE:'#546e7a'};
 
 // ── State ──────────────────────────────────────────────────────────────────────
-const state = { lat: CL_LAT, lon: CL_LON };
+const fmt = d => (d instanceof Date ? d : new Date(d)).toISOString().slice(0,10);
+const todayStr = () => fmt(new Date());
+const state = { lat: CL_LAT, lon: CL_LON, slicerDate: todayStr() };
 
 // ── Map ────────────────────────────────────────────────────────────────────────
 const map = L.map('map', {center:[39.00,-122.78], zoom:11});
@@ -331,9 +333,9 @@ function loadSiteMarkers() {
 }
 
 // ── Data fetching ──────────────────────────────────────────────────────────────
-async function fetchCyanoindex(days = 45) {
-  const end = new Date(); const start = new Date(end - days*864e5);
-  const fmt = d => d.toISOString().slice(0,10);
+async function fetchCyanoindex(endDate = null, windowDays = 45) {
+  const end = endDate ? new Date(endDate) : new Date();
+  const start = new Date(+end - windowDays*864e5);
   const url = `${FHAB_BASE}/cyano/10daymax/${WID}/${fmt(start)}/${fmt(end)}/ci_modified/json`;
   const r = await fetch(url, {headers:{'User-Agent':'HABaware/1.0'}});
   return r.json();
@@ -370,14 +372,14 @@ async function fetchStaticData() {
 }
 
 // ── Forecast (JS approximation of LightGBM model) ─────────────────────────────
-function computeForecast(records) {
-  const valid = records.filter(r => r.max > BASELINE_CI && r.pixel_count > 0);
+function computeForecast(records, cutoffDate) {
+  const recs = cutoffDate ? records.filter(r => r.date <= cutoffDate) : records;
+  const valid = recs.filter(r => r.max > BASELINE_CI && r.pixel_count > 0);
   if (!valid.length) return 0;
   const latest = valid[valid.length - 1];
-  const recent = records.slice(-30).filter(r => r.max > BASELINE_CI);
-  const w7  = records.slice(-7).filter(r => r.max > BASELINE_CI).map(r => r.max);
-  const w14 = records.slice(-14).filter(r => r.max > BASELINE_CI).map(r => r.max);
-  const w30 = records.slice(-30).filter(r => r.max > BASELINE_CI).map(r => r.max);
+  const w7  = recs.slice(-7).filter(r => r.max > BASELINE_CI).map(r => r.max);
+  const w14 = recs.slice(-14).filter(r => r.max > BASELINE_CI).map(r => r.max);
+  const w30 = recs.slice(-30).filter(r => r.max > BASELINE_CI).map(r => r.max);
   const mean = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
   const peak7  = w7.length  ? Math.max(...w7)  : 0;
   const peak14 = w14.length ? Math.max(...w14) : 0;
@@ -487,10 +489,18 @@ function renderDQCard(key, label, dq, weight) {
 
 let trendChart = null;
 function renderTrend(records) {
-  const items = records.slice(-30);
+  const cutoff = state.slicerDate || todayStr();
+  const items = records.slice(-45);
   const labels = items.map(r => r.date.slice(5));
   const values = items.map(r => r.max > BASELINE_CI ? Math.round(r.max*10)/10 : 0);
-  const bgColors = values.map(v => v>=200?'#b71c1c88':v>=80?'#e64a1988':v>=30?'#f57f1788':v>=5?'#558b2f88':'#2e7d3288');
+  const bgColors = items.map((r, i) => {
+    const v = values[i];
+    const base = v>=200?'#b71c1c':v>=80?'#e64a19':v>=30?'#f57f17':v>=5?'#558b2f':'#2e7d32';
+    // Brighten the bar closest to the selected date
+    if (r.date === cutoff || (r.date <= cutoff && (items[i+1]?.date > cutoff || !items[i+1])))
+      return base + 'ff';
+    return base + (r.date <= cutoff ? '99' : '33');
+  });
   const ctx = document.getElementById('trendChart').getContext('2d');
   if (trendChart) trendChart.destroy();
   trendChart = new Chart(ctx, {
@@ -508,12 +518,18 @@ function renderTrend(records) {
 
 function renderAll(records, weather, swamp, bvpomo) {
   const arm = inferArm(state.lat, state.lon);
-  const ciCurrent = (() => { const v=records.filter(r=>r.max>BASELINE_CI); return v.length?v[v.length-1].max:0; })();
-  const ciForecast = computeForecast(records);
+  const cutoff = state.slicerDate || todayStr();
+  const isLive = cutoff >= todayStr();
+  // CI current = record on/closest to selected date (or last before it)
+  const validUpTo = records.filter(r => r.max > BASELINE_CI && r.date <= cutoff);
+  const ciCurrent = validUpTo.length ? validUpTo[validUpTo.length-1].max : 0;
+  const ciCurrentDate = validUpTo.length ? validUpTo[validUpTo.length-1].date : null;
+  const ciForecast = computeForecast(records, cutoff);
   const ciCurrentAdj = locationAdjustedCI(ciCurrent, arm);
   const ciForecastAdj = locationAdjustedCI(ciForecast, arm);
   const mult = ARM_RISK_MULTIPLIER[arm] || 1.0;
-  const tier = riskTier(ciForecastAdj);
+  // For historical dates use current CI for risk tier (no real forecast possible)
+  const tier = riskTier(isLive ? ciForecastAdj : ciCurrentAdj);
 
   // Risk banner
   const banner = document.getElementById('risk-banner');
@@ -524,15 +540,22 @@ function renderAll(records, weather, swamp, bvpomo) {
   document.getElementById('risk-msg').textContent = tier.msg;
 
   const armName = ARM_NAMES[arm] || arm;
+  const dateTag = ciCurrentDate ? `<span class="ci-row-meta">${ciCurrentDate}</span>` : '';
   // Lake-wide row
+  const lwFcPart = isLive
+    ? ` &nbsp;→&nbsp; 7-day: <b>${Math.round(ciForecast)}</b><span class="ci-row-meta">projected</span>`
+    : '';
   document.getElementById('ci-lakewide').innerHTML =
-    `Current: <b>${Math.round(ciCurrent)}</b> &nbsp;→&nbsp; 7-day: <b>${Math.round(ciForecast)}</b>` +
+    `<b>${Math.round(ciCurrent)}</b>${dateTag}${lwFcPart}` +
     `<span class="ci-row-meta">satellite ci_modified</span>`;
   // Location row
   const multStr = `×${mult.toFixed(2)} (${armName})`;
   document.getElementById('ci-loc-label').textContent = `${armName}`;
+  const locFcPart = isLive
+    ? ` &nbsp;→&nbsp; 7-day: <b>${Math.round(ciForecastAdj)}</b><span class="ci-row-meta">projected</span>`
+    : '';
   document.getElementById('ci-location').innerHTML =
-    `Current: <b>${Math.round(ciCurrentAdj)}</b> &nbsp;→&nbsp; 7-day: <b>${Math.round(ciForecastAdj)}</b>` +
+    `<b>${Math.round(ciCurrentAdj)}</b>${locFcPart}` +
     `<span class="ci-row-meta">${multStr} · BV Pomo historical</span>`;
 
   // CI scale bar (log)
@@ -681,7 +704,7 @@ async function loadAll() {
   document.getElementById('coord-label').textContent = `${state.lat.toFixed(4)}°N, ${Math.abs(state.lon).toFixed(4)}°W`;
 
   const [records, weather, {swamp, bvpomo}] = await Promise.all([
-    fetchCyanoindex(_slicerDays).catch(()=>[]),
+    fetchCyanoindex(state.slicerDate, 45).catch(()=>[]),
     fetchWeather().catch(()=>[]),
     fetchStaticData(),
   ]);
@@ -697,33 +720,41 @@ async function loadAll() {
 }
 
 // ── Date slicer ────────────────────────────────────────────────────────────────
-let _slicerDays = 45;
-
-function slicerLabel(days) {
-  if (days >= 168) return 'Last 6 months';
-  if (days >= 84)  return 'Last 3 months';
-  if (days >= 28)  return `Last ${Math.round(days/30)} month${Math.round(days/30)>1?'s':''}`;
-  if (days >= 14)  return `Last ${Math.round(days/7)} weeks`;
-  return `Last ${days} days`;
-}
-
+// Slider value = days back from today (0 = today, 180 = 6 months ago)
 (function initSlicer() {
-  const el = document.getElementById('date-range');
+  const el  = document.getElementById('date-range');
   const lbl = document.getElementById('date-range-label');
-  // Map slider 0-180 directly to days 14-180
-  el.min = 14; el.max = 180; el.value = 45;
-  lbl.textContent = slicerLabel(45);
+  el.min = 0; el.max = 180; el.value = 0;
+
+  function daysAgoToDate(daysBack) {
+    const d = new Date(); d.setDate(d.getDate() - daysBack);
+    return fmt(d);
+  }
+
+  function updateLabel(daysBack) {
+    const dateStr = daysAgoToDate(daysBack);
+    lbl.textContent = daysBack === 0 ? `Today (${dateStr})` : dateStr;
+  }
+
+  updateLabel(0);
+
   let _debounce;
   el.addEventListener('input', () => {
-    const days = parseInt(el.value);
-    lbl.textContent = slicerLabel(days);
+    const daysBack = parseInt(el.value);
+    updateLabel(daysBack);
     clearTimeout(_debounce);
     _debounce = setTimeout(async () => {
-      _slicerDays = days;
-      const records = await fetchCyanoindex(days).catch(() => state._records || []);
+      const dateStr = daysAgoToDate(daysBack);
+      state.slicerDate = dateStr;
+      // Fetch 45-day window ending on selected date
+      const records = await fetchCyanoindex(dateStr, 45).catch(() => state._records || []);
       state._records = records;
       renderAll(records, state._weather, state._swamp, state._bvpomo);
-    }, 400);
+      // Auto-load satellite raster for selected date
+      if (_ciLayer) { map.removeLayer(_ciLayer); _ciLayer = null; }
+      _ciLayerOn = true;
+      loadCIRaster(dateStr);
+    }, 350);
   });
 })();
 
