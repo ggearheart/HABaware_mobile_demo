@@ -89,6 +89,15 @@
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
   .leaflet-container{background:#1a1d27;}
   .leaflet-tile{filter:brightness(.7) saturate(.6) hue-rotate(180deg);}
+  #date-slicer{padding:10px 16px 0;flex-shrink:0;}
+  #date-slicer .section-title{margin-bottom:6px;}
+  .slicer-row{display:flex;align-items:center;gap:10px;}
+  .slicer-range{flex:1;appearance:none;height:4px;border-radius:2px;background:var(--border);outline:none;cursor:pointer;}
+  .slicer-range::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;}
+  .slicer-range::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;}
+  .slicer-label{font-size:11px;color:var(--muted);white-space:nowrap;min-width:70px;text-align:right;}
+  .slicer-ticks{display:flex;justify-content:space-between;margin-top:2px;padding:0 1px;}
+  .slicer-ticks span{font-size:9px;color:var(--muted);}
   #data-note{padding:8px 12px 12px;font-size:10px;color:var(--muted);line-height:1.5;flex-shrink:0;}
   #data-note a{color:var(--accent);text-decoration:none;}
   #info-col::-webkit-scrollbar{width:4px;} #info-col::-webkit-scrollbar-track{background:transparent;} #info-col::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
@@ -161,8 +170,19 @@
       </div>
     </div>
 
+    <div id="date-slicer">
+      <div class="section-title">Date Range</div>
+      <div class="slicer-row">
+        <input type="range" class="slicer-range" id="date-range" min="0" max="180" value="45" step="1">
+        <span class="slicer-label" id="date-range-label">Last 45 days</span>
+      </div>
+      <div class="slicer-ticks">
+        <span>6 mo</span><span>3 mo</span><span>1 mo</span><span>2 wk</span>
+      </div>
+    </div>
+
     <div id="trend-section">
-      <div class="section-title">30-Day Satellite Trend</div>
+      <div class="section-title">Satellite Trend</div>
       <div id="trend-canvas-wrap"><canvas id="trendChart"></canvas></div>
     </div>
 
@@ -311,8 +331,8 @@ function loadSiteMarkers() {
 }
 
 // ── Data fetching ──────────────────────────────────────────────────────────────
-async function fetchCyanoindex() {
-  const end = new Date(); const start = new Date(end - 45*864e5);
+async function fetchCyanoindex(days = 45) {
+  const end = new Date(); const start = new Date(end - days*864e5);
   const fmt = d => d.toISOString().slice(0,10);
   const url = `${FHAB_BASE}/cyano/10daymax/${WID}/${fmt(start)}/${fmt(end)}/ci_modified/json`;
   const r = await fetch(url, {headers:{'User-Agent':'HABaware/1.0'}});
@@ -661,7 +681,7 @@ async function loadAll() {
   document.getElementById('coord-label').textContent = `${state.lat.toFixed(4)}°N, ${Math.abs(state.lon).toFixed(4)}°W`;
 
   const [records, weather, {swamp, bvpomo}] = await Promise.all([
-    fetchCyanoindex().catch(()=>[]),
+    fetchCyanoindex(_slicerDays).catch(()=>[]),
     fetchWeather().catch(()=>[]),
     fetchStaticData(),
   ]);
@@ -675,6 +695,37 @@ async function loadAll() {
   loadSiteMarkers();
   renderAll(records, weather, swamp, bvpomo);
 }
+
+// ── Date slicer ────────────────────────────────────────────────────────────────
+let _slicerDays = 45;
+
+function slicerLabel(days) {
+  if (days >= 168) return 'Last 6 months';
+  if (days >= 84)  return 'Last 3 months';
+  if (days >= 28)  return `Last ${Math.round(days/30)} month${Math.round(days/30)>1?'s':''}`;
+  if (days >= 14)  return `Last ${Math.round(days/7)} weeks`;
+  return `Last ${days} days`;
+}
+
+(function initSlicer() {
+  const el = document.getElementById('date-range');
+  const lbl = document.getElementById('date-range-label');
+  // Map slider 0-180 directly to days 14-180
+  el.min = 14; el.max = 180; el.value = 45;
+  lbl.textContent = slicerLabel(45);
+  let _debounce;
+  el.addEventListener('input', () => {
+    const days = parseInt(el.value);
+    lbl.textContent = slicerLabel(days);
+    clearTimeout(_debounce);
+    _debounce = setTimeout(async () => {
+      _slicerDays = days;
+      const records = await fetchCyanoindex(days).catch(() => state._records || []);
+      state._records = records;
+      renderAll(records, state._weather, state._swamp, state._bvpomo);
+    }, 400);
+  });
+})();
 
 loadAll();
 setInterval(loadAll, 5 * 60 * 1000);

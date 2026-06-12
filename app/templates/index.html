@@ -10,6 +10,10 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- GeoTiff / raster overlay -->
+<script src="https://cdn.jsdelivr.net/npm/geotiff@2.0.7/dist-browser/geotiff.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/georaster@1.6.1/dist/georaster.browser.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/georaster-layer-for-leaflet@2.3.0/dist/georaster-layer-for-leaflet.min.js"></script>
 
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -70,6 +74,16 @@
     padding: 6px 12px; font-size: 12px; color: var(--muted);
   }
   #arm-badge strong { color: var(--text); }
+  #ci-layer-btn {
+    position: absolute; top: 60px; right: 12px; z-index: 1000;
+    background: rgba(15,17,23,0.88); backdrop-filter: blur(6px);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 12px; font-size: 12px; color: var(--muted);
+    cursor: pointer; display: flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+  }
+  #ci-layer-btn.active { border-color: var(--accent); color: var(--text); }
+  #ci-layer-btn .ci-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--high); flex-shrink: 0; }
 
   /* ── Info panel ─────────────────────────────────────────── */
   #info-col header {
@@ -141,6 +155,17 @@
   .dq-weight { font-size: 10px; color: var(--muted); margin-top: 3px; }
   .dq-weight span { background: var(--border); border-radius: 3px; padding: 1px 4px; }
 
+  /* ── Date slicer ─────────────────────────────────────────── */
+  #date-slicer { padding: 10px 16px 0; flex-shrink: 0; }
+  #date-slicer .section-title { margin-bottom: 6px; }
+  .slicer-row { display: flex; align-items: center; gap: 10px; }
+  .slicer-range { flex: 1; appearance: none; height: 4px; border-radius: 2px; background: var(--border); outline: none; cursor: pointer; }
+  .slicer-range::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  .slicer-range::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
+  .slicer-label { font-size: 11px; color: var(--muted); white-space: nowrap; min-width: 70px; text-align: right; }
+  .slicer-ticks { display: flex; justify-content: space-between; margin-top: 2px; padding: 0 1px; }
+  .slicer-ticks span { font-size: 9px; color: var(--muted); }
+
   /* ── Sparkline ───────────────────────────────────────────── */
   #trend-section { padding: 0 12px 12px; flex-shrink: 0; }
   #trend-canvas-wrap { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
@@ -204,6 +229,9 @@
       Click or drag pin to select a location on the lake
     </div>
     <div id="arm-badge">Arm: <strong id="arm-label">—</strong> &nbsp;·&nbsp; <span id="coord-label">—</span></div>
+    <div id="ci-layer-btn" onclick="toggleCILayer()" title="Toggle satellite CI overlay">
+      <span class="ci-dot"></span><span id="ci-layer-label">Satellite Layer</span>
+    </div>
   </div>
 
   <!-- ── Info column ───────────────────────────────────── -->
@@ -263,9 +291,21 @@
       </div>
     </div>
 
+    <!-- Date slicer -->
+    <div id="date-slicer">
+      <div class="section-title">Date Range</div>
+      <div class="slicer-row">
+        <input type="range" class="slicer-range" id="date-range" min="14" max="180" value="45" step="1">
+        <span class="slicer-label" id="date-range-label">Last 45 days</span>
+      </div>
+      <div class="slicer-ticks">
+        <span>6 mo</span><span>3 mo</span><span>1 mo</span><span>2 wk</span>
+      </div>
+    </div>
+
     <!-- CI Trend sparkline -->
     <div id="trend-section">
-      <div class="section-title">30-Day Satellite Trend</div>
+      <div class="section-title">Satellite Trend</div>
       <div id="trend-canvas-wrap">
         <canvas id="trendChart"></canvas>
       </div>
@@ -356,6 +396,75 @@ map.on("click", e => {
   userMarker.setLatLng(e.latlng);
   updateLocation(e.latlng.lat, e.latlng.lng);
 });
+
+// ── CI Satellite raster overlay ───────────────────────────────────────────────
+let _ciLayer = null;
+let _ciLayerDate = null;
+let _ciLayerOn = false;
+
+async function loadCIRaster(dateStr) {
+  const label = document.getElementById('ci-layer-label');
+  label.textContent = 'Loading…';
+  const url = `https://fhab-api.sfei.org/cyano/10daymax/${dateStr}/33/tif`;
+  try {
+    const resp = await fetch(url, {headers:{'User-Agent':'HABaware/1.0'}});
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const buf = await resp.arrayBuffer();
+
+    // Extract SFEI color table from GeoTiff header
+    const tiff = await GeoTIFF.fromArrayBuffer(buf);
+    const img  = await tiff.getImage();
+    const cm   = img.getFileDirectory().ColorMap; // R[256]+G[256]+B[256], 16-bit each
+    const colorLookup = new Array(256).fill(null);
+    if (cm) {
+      for (let i = 1; i < 255; i++) {
+        const r = Math.round(cm[i]       / 65535 * 255);
+        const g = Math.round(cm[256 + i] / 65535 * 255);
+        const b = Math.round(cm[512 + i] / 65535 * 255);
+        if (r < 5 && g < 5 && b < 5) continue; // near-black = nodata
+        colorLookup[i] = `rgba(${r},${g},${b},0.82)`;
+      }
+    }
+
+    const georaster = await parseGeoraster(buf);
+    _ciLayer = new GeoRasterLayer({
+      georaster,
+      opacity: 1,
+      pixelValuesToColorFn: values => colorLookup[Math.round(values[0])] || null,
+      resolution: 256,
+      debugLevel: 0,
+    });
+    _ciLayer.addTo(map);
+    _ciLayerDate = dateStr;
+    label.textContent = `CI Layer (${dateStr})`;
+    document.getElementById('ci-layer-btn').classList.add('active');
+  } catch(e) {
+    label.textContent = 'Layer unavailable';
+    console.error('CI raster:', e);
+  }
+}
+
+function toggleCILayer() {
+  if (_ciLayerOn) {
+    if (_ciLayer) map.removeLayer(_ciLayer);
+    _ciLayerOn = false;
+    document.getElementById('ci-layer-btn').classList.remove('active');
+    document.getElementById('ci-layer-label').textContent = 'Satellite Layer';
+  } else {
+    _ciLayerOn = true;
+    const dateStr = state.status?.data_quality?.satellite?.latest_date
+      || new Date(Date.now() - 86400000).toISOString().slice(0,10);
+    if (_ciLayer && _ciLayerDate === dateStr) {
+      _ciLayer.addTo(map);
+      document.getElementById('ci-layer-btn').classList.add('active');
+      document.getElementById('ci-layer-label').textContent = `CI Layer (${dateStr})`;
+    } else {
+      if (_ciLayer) map.removeLayer(_ciLayer);
+      _ciLayer = null;
+      loadCIRaster(dateStr);
+    }
+  }
+}
 
 // ── BV Pomo site markers ───────────────────────────────────────────────────────
 const advColors = {
@@ -699,6 +808,43 @@ window.renderAll = d => {
   origRenderAll(d);
   highlightNearestSite(d.location.nearest_sites);
 };
+
+// ── Date slicer ────────────────────────────────────────────────────────────────
+function slicerLabel(days) {
+  if (days >= 168) return 'Last 6 months';
+  if (days >= 84)  return 'Last 3 months';
+  if (days >= 28)  return `Last ${Math.round(days/30)} month${Math.round(days/30)>1?'s':''}`;
+  if (days >= 14)  return `Last ${Math.round(days/7)} weeks`;
+  return `Last ${days} days`;
+}
+
+async function fetchSFEITrend(days) {
+  const end = new Date(); const start = new Date(end - days*864e5);
+  const fmt = d => d.toISOString().slice(0,10);
+  const url = `https://fhab-api.sfei.org/cyano/10daymax/33/${fmt(start)}/${fmt(end)}/ci_modified/json`;
+  const r = await fetch(url);
+  const raw = await r.json();
+  // raw is array of {date, max, pixel_count, ...} or similar
+  if (!Array.isArray(raw)) return [];
+  return raw.map(d => ({ date: d.date, ci_max: d.max ?? d.ci_max ?? 0 }));
+}
+
+(function initSlicer() {
+  const el = document.getElementById('date-range');
+  const lbl = document.getElementById('date-range-label');
+  let _debounce;
+  el.addEventListener('input', () => {
+    const days = parseInt(el.value);
+    lbl.textContent = slicerLabel(days);
+    clearTimeout(_debounce);
+    _debounce = setTimeout(async () => {
+      try {
+        const trend = await fetchSFEITrend(days);
+        if (trend.length) renderTrend(trend);
+      } catch(e) { console.warn('Slicer fetch failed:', e); }
+    }, 400);
+  });
+})();
 
 // ── Init ───────────────────────────────────────────────────────────────────────
 document.getElementById("coord-label").textContent =
